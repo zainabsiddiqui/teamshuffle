@@ -126,3 +126,19 @@
     overflow-y: scroll;
     height: 600px;
   }
+  
+  .Jumbotron {
+	  background-color: lightblue;
+	  border:10px solid #003366;
+      width: 500px;
+      margin: 0 auto;
+  }
+  
+  .input{
+	  width: 100%;
+  }
+  
+
+  
+  
+ 

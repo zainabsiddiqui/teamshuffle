@@ -12,7 +12,6 @@ import {
 import firebase from '../Firebase';
 
 
-
 function Login() {
     const history = useHistory();
     const [creds, setCreds] = useState({ nickname: '' });
@@ -47,15 +46,16 @@ function Login() {
             {showLoading &&
                 <Spinner color="primary" />
             }
-            <Jumbotron>
-                <Form onSubmit={login}>
+			
+            <Jumbotron className="Jumbotron">
+                <Form className="LoginForm" onSubmit={login}>
                     <FormGroup>
                         <Label>Name</Label>
-                        <Input type="text" name="nickname" id="nickname" placeholder="Enter Your Name" value={creds.nickname} onChange={onChange} />
+                        <Input className="input" type="text" name="nickname" id="nickname" placeholder="Enter Your Name" value={creds.nickname} onChange={onChange} />
                     </FormGroup>
                     <FormGroup>
                         <Label>Password</Label>
-                        <Input type="password" name="password" id="password" placeholder="Enter Your Password" onChange={onChange} />
+                        <Input className="input" type="password" name="password" id="password" placeholder="Enter Your Password" onChange={onChange} />
                     </FormGroup>
                     <Button variant="primary" type="submit">
                         Login
