@@ -13,12 +13,13 @@
     left: 0;
     width: 100%;
     padding: 10px;
-    background-color: #ffffff;
-    border-top: solid 1px #efefef;
+    background-color: #737373;
+    border-top: solid 1px #737373;
   }
     
   .MessageForm {
     margin-left: 10px;
+	background-color:#737373;
   }
     
   .MessageBox {
@@ -101,11 +102,25 @@
     min-height: 49px;
   }
   
-  .MessageBox .ChatStatus .ChatDate {
+  .ChatStatus{
+	color: white;
+  }
+  
+  .MessageBox .ChatStatus{
     display: block;
     font-size: 10px;
     font-style: italic;
     color: #777;
+    height: 15px;
+    left: 10%;
+    right:10%;
+  }
+  
+  .ChatDate{
+	display: block;
+    font-size: 10px;
+    font-style: italic;
+    color: white;
     height: 15px;
     left: 10%;
     right:10%;
@@ -117,7 +132,7 @@
     border-radius: 6px;
     font-size: 12px;
     color: #555;
-    height: 34px;
+    height: 35px;
     left: 10%;
     right:10%;
   }
@@ -125,20 +140,52 @@
   .ChatContent {
     overflow-y: scroll;
     height: 600px;
+	background-color: #737373;
   }
   
   .Jumbotron {
-	  background-color: lightblue;
-	  border:10px solid #003366;
-      width: 500px;
+	  background-color: black;
+      width: 400px;
+	  height: auto;
       margin: 0 auto;
   }
   
   .input{
 	  width: 100%;
   }
-  
+ 
+ .design{
+	 background-color:black;
+ }
+ 
+ .logo{
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+	width: 30%;
+ }
 
-  
-  
+.label{
+	font-weight: bold;
+	color: white;
+}
+
+.loginButton{
+	font-weight: bold;
+	color: white;
+}
+
+.card{
+	 background-color:#737373;
+	 color: white;
+ }
+ 
+ .exitChatButton{
+	 background-color:black;
+ }
+ 
+ .sendButton{
+	 background-color:black;
+ }
+
  

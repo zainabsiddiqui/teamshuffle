@@ -116,9 +116,9 @@ function ChatRoom(props) {
                     <Col xs="4">
                         <div>
                             <Card className="UsersCard">
-                                <CardBody>
+                                <CardBody className="card">
                                     <CardSubtitle>
-                                        <Button variant="primary" type="button" onClick={() => { exitChat() }}>
+                                        <Button className="exitChatButton" variant="primary" type="button" onClick={() => { exitChat() }}>
                                             Exit Chat
                                         </Button>
                                     </CardSubtitle>
@@ -126,7 +126,7 @@ function ChatRoom(props) {
                             </Card>
                             {users.map((item, idx) => (
                                 <Card key={idx} className="UsersCard">
-                                    <CardBody>
+                                    <CardBody className="card">
                                         <CardSubtitle>{item.nickname}</CardSubtitle>
                                     </CardBody>
                                 </Card>
@@ -158,9 +158,9 @@ function ChatRoom(props) {
                         <footer className="StickyFooter">
                             <Form className="MessageForm" onSubmit={submitMessage}>
                                 <InputGroup>
-                                <Input type="text" name="message" id="message" placeholder="Enter message here" value={newchat.message} onChange={onChange} />
+                                <Input className="messageInput" type="text" name="message" id="message" placeholder="Enter message here" value={newchat.message} onChange={onChange} />
                                     <InputGroupAddon addonType="append">
-                                        <Button variant="primary" type="submit">Send</Button>
+                                        <Button className="sendButton" variant="primary" type="submit">Send</Button>
                                     </InputGroupAddon>
                                 </InputGroup>
                             </Form>

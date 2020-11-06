@@ -13,7 +13,7 @@ import firebase from '../Firebase';
 
 
 function Login() {
-    const history = useHistory();
+	const history = useHistory();
     const [creds, setCreds] = useState({ nickname: '' });
     const [showLoading, setShowLoading] = useState(false);
     const ref = firebase.database().ref('users/');
@@ -42,27 +42,30 @@ function Login() {
     };
     
     return (
-        <div>
-            {showLoading &&
-                <Spinner color="primary" />
-            }
+        <body className="design">
+			<img src="Team_Shuffle_Logo.png" className="logo"/>
+			<div>
+				{showLoading &&
+					<Spinner color="primary" />
+				}
 			
-            <Jumbotron className="Jumbotron">
-                <Form className="LoginForm" onSubmit={login}>
-                    <FormGroup>
-                        <Label>Name</Label>
-                        <Input className="input" type="text" name="nickname" id="nickname" placeholder="Enter Your Name" value={creds.nickname} onChange={onChange} />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label>Password</Label>
-                        <Input className="input" type="password" name="password" id="password" placeholder="Enter Your Password" onChange={onChange} />
-                    </FormGroup>
-                    <Button variant="primary" type="submit">
-                        Login
-                    </Button>
-                </Form>
-            </Jumbotron>
-        </div>
+				<Jumbotron className="Jumbotron">
+					<Form className="LoginForm" onSubmit={login}>
+						<FormGroup>
+							<Label className="label">Name</Label>
+							<Input className="input" type="text" name="nickname" id="nickname" placeholder="Enter Your Name" value={creds.nickname} onChange={onChange} />
+						</FormGroup>
+						<FormGroup>
+							<Label className="label">Password</Label>
+							<Input className="input" type="password" name="password" id="password" placeholder="Enter Your Password" onChange={onChange} />
+						</FormGroup>
+						<Button className="loginButton" variant="primary" type="submit">
+							Login
+						</Button>
+					</Form>
+				</Jumbotron>
+			</div>
+		</body>
     );
 }
 
