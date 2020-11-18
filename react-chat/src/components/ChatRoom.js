@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import {
-    useHistory,
-    useParams
-  } from "react-router-dom";
+import React, { useContext, useState, useRef } from "react";
+import { UserContext } from "../providers/UserProvider";
+import { navigate, Link, useParams } from "@reach/router";
+import {auth, getRoomDocuments} from "../Firebase";
+import firebase from '../Firebase';
+import { firestore } from '../Firebase';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import '../Styles.css';
 import {
     Container, 
     Row, 
@@ -16,151 +19,204 @@ import {
     Input,
     InputGroupAddon
 } from 'reactstrap';
-import Moment from 'moment';
-import firebase from '../Firebase';
-import ScrollToBottom from 'react-scroll-to-bottom';
-import '../Styles.css';
 
-function ChatRoom(props) {
-    const [chats, setChats] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [nickname, setNickname] = useState('');
-    const [roomname, setRoomname] = useState('');
-    const [newchat, setNewchat] = useState({ roomname: '', nickname: '', message: '', date: '', type: '' });
-    const history = useHistory();
+const ChatRoom = () => {
+    const dummy = useRef();
+
+    const user = useContext(UserContext);
+    const { displayName } = user;
+
     const { room } = useParams();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setNickname(localStorage.getItem('nickname'));
-            setRoomname(room);
-            firebase.database().ref('chats/').orderByChild('roomname').equalTo(roomname).on('value', resp => {
-              setChats([]);
-              setChats(snapshotToArray(resp));
-            });
-        };
-      
-        fetchData();
-    }, [room, roomname]);
+    const chatsRef = firestore.collection('chats');
+    const query = chatsRef.where("roomname", "==", room);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setNickname(localStorage.getItem('nickname'));
-            setRoomname(room);
-            firebase.database().ref('roomusers/').orderByChild('roomname').equalTo(roomname).on('value', (resp2) => {
-              setUsers([]);
-              const roomusers = snapshotToArray(resp2);
-              setUsers(roomusers.filter(x => x.status === 'online'));
-            });
-        };
-      
-        fetchData();
-    }, [room, roomname]);
+    const [chats] = useCollectionData(query, { idField: 'id' });
 
-    const snapshotToArray = (snapshot) => {
-        const returnArr = [];
+    console.log(chats);
 
-        snapshot.forEach((childSnapshot) => {
-            const item = childSnapshot.val();
-            item.key = childSnapshot.key;
-            returnArr.push(item);
-        });
+    const [chatMessage, setChatMessage] = useState('');
 
-        return returnArr;
+
+    /*var docRef = firestore.collection("rooms");
+    var topic;
+
+    const grabTopicIdea = async (ref) => {
+
+    let query = ref.where('roomname', '==', room)
+    .get()
+    .then(snapshot => {
+    if (snapshot.empty) {
+      console.log('No matching documents.');
+      return;
+    }  
+
+    // let topic = snapshot.idea;
+    // console.log(topic);
+    // return topic;
+
+    snapshot.forEach(doc => {
+      // Do something
+        return String.toString(doc.data().idea);
+    });
+      })
+      .catch(err => {
+        console.log('Error getting documents', err);
+      });
     }
 
-    const submitMessage = (e) => {
+    grabTopicIdea(docRef).then((idea) => {
+        console.log(idea);
+        topic = idea;
+     }).catch((err) => { console.log("Error: ", err); });
+    */
+
+    // let docRef = firestore.collection('rooms').where("roomname", "==", room);
+
+    // const getTopic = async (ref) => {
+
+    //     const topic = await ref.get()
+    //       .then(snapshot => {
+    //         if (snapshot.empty) {
+    //             console.log('No matching documents.');
+    //             return;
+    //         } 
+
+    //         snapshot.forEach(doc => {
+    //             return doc.data().idea;
+    //         });
+
+    //       })
+    //       .catch(err => {
+    //         console.log('Error getting document', err);
+    //       });
+    // }
+
+    // var promise = getTopic(docRef);
+
+    // console.log(promise);
+
+    function getTopic() {
+    return new Promise((resolve, reject) => {
+            firestore
+            .collection("rooms")
+            .where("roomname", "==", room)
+            .get()
+            .then(function(doc) {
+                if (doc.exists) {
+                    resolve(doc.data().idea); // <== Pay attention to this line, you resolve rather than return
+                }
+            })
+            .catch(function(error) {
+                console.log("Error getting document:", error);
+                reject(error);
+            });
+        });
+    }
+
+    getTopic().then((data) => {
+        console.log(data);
+        }).catch((error) => {
+    // An error occured
+        });
+
+    const sendMessage = async (e) => {
         e.preventDefault();
-        const chat = newchat;
-        chat.roomname = roomname;
-        chat.nickname = nickname;
-        chat.date = Moment(new Date()).format('MM/DD/YYYY HH:mm:ss');
-        chat.type = 'message';
-        const newMessage = firebase.database().ref('chats/').push();
-        newMessage.set(chat);
-        setNewchat({ roomname: '', nickname: '', message: '', date: '', type: '' });
-    };
 
-    const onChange = (e) => {
-        e.persist();
-        setNewchat({...newchat, [e.target.name]: e.target.value});
+        await chatsRef.add({
+          message: chatMessage,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          roomname: room,
+          displayName: displayName,
+          type: "message"
+        });
+
+        setChatMessage('');
+        dummy.current.scrollIntoView({ behavior: 'smooth' });
+      }
+
+    const exitChat = async () => {
+        await chatsRef.add({
+          message: displayName + " left "+ room,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          roomname: room,
+          displayName: displayName,
+          type: "exit"
+        });
+
+        navigate("/");
     }
 
-    const exitChat = (e) => {
-        const chat = { roomname: '', nickname: '', message: '', date: '', type: '' };
-        chat.roomname = roomname;
-        chat.nickname = nickname;
-        chat.date = Moment(new Date()).format('MM/DD/YYYY HH:mm:ss');
-        chat.message = `${nickname} left the room`;
-        chat.type = 'exit';
-        const newMessage = firebase.database().ref('chats/').push();
-        newMessage.set(chat);
-    
-        firebase.database().ref('roomusers/').orderByChild('roomname').equalTo(roomname).once('value', (resp) => {
-          let roomuser = [];
-          roomuser = snapshotToArray(resp);
-          const user = roomuser.find(x => x.nickname === nickname);
-          if (user !== undefined) {
-            const userRef = firebase.database().ref('roomusers/' + user.key);
-            userRef.update({status: 'offline'});
-          }
+    const setTopic = async (message) => {
+        var updateTopicQuery = firestore.collection('rooms').where('roomname','==', room);
+        updateTopicQuery.get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.update({idea: message});
+          });
         });
-    
-        history.goBack();
     }
 
     return (
-        <div className="Container">
+        <div className="Container greyBackground">
+            <span ref={dummy}></span>
             <Container>
                 <Row>
                     <Col xs="4">
-                        <div>
+            <header className = "StickyHeader text-center">
+            <h4 className = "font-weight-bold">{room} ✨</h4>
+            <h6>Idea:</h6>
+            
+            </header>
+                        <div className = "padding50">
                             <Card className="UsersCard">
-                                <CardBody className="card">
+                                <CardBody className="card bg-white">
                                     <CardSubtitle>
-                                        <Button className="exitChatButton" variant="primary" type="button" onClick={() => { exitChat() }}>
-                                            Exit Chat
+                                        <Button className="exitChatButton btn btn-info" type="button" onClick={() => { exitChat() }}>
+                                            Exit Group
                                         </Button>
                                     </CardSubtitle>
                                 </CardBody>
                             </Card>
-                            {users.map((item, idx) => (
-                                <Card key={idx} className="UsersCard">
-                                    <CardBody className="card">
-                                        <CardSubtitle>{item.nickname}</CardSubtitle>
+                            
+                                <Card className="UsersCard">
+                                    <CardBody className="card bg-white">
+                                        <CardSubtitle>{ displayName }</CardSubtitle>
                                     </CardBody>
                                 </Card>
-                            ))}
+                        
                         </div>
                     </Col>
                     <Col xs="8">
-                        <ScrollToBottom className="ChatContent">
-                            {chats.map((item, idx) => (
-                                <div key={idx} className="MessageBox">
-                                    {item.type ==='join'||item.type === 'exit'?
+                        <div className = "chatPadding">
+                        <div className = "ChatContent bg-white">
+                            {chats && chats.map((chat, id) => (
+                                <div className="MessageBox" key = {id}>
+                                {chat.type === "join" || chat.type === "exit" ?
                                         <div className="ChatStatus">
-                                            <span className="ChatDate">{item.date}</span>
-                                            <span className="ChatContentCenter">{item.message}</span>
-                                        </div>:
-                                        <div className="ChatMessage">
-                                            <div className={`${item.nickname === nickname? "RightBubble":"LeftBubble"}`}>
-                                            {item.nickname === nickname ? 
-                                                <span className="MsgName">Me</span>:<span className="MsgName">{item.nickname}</span>
-                                            }
-                                            <span className="MsgDate"> at {item.date}</span>
-                                            <p>{item.message}</p>
-                                            </div>
+                                        <span className="ChatContentCenter">{chat.message}</span>
                                         </div>
-                                    }
+                                        :
+                                        <div className="ChatMessage">
+                                            <div className={`${chat.displayName === displayName? "RightBubble":"LeftBubble"}`}>
+                                                {chat.displayName === displayName ?
+                                                    <span className="MsgName">Me</span>
+                                                    :
+                                                    <span className="MsgName">{chat.displayName}<span className = "float-right heartAction" action onClick={() => { setTopic(chat.message) }}>🤍</span></span>
+                                                }
+                                                <p>{chat.message}</p>
+                                                </div>
+                                            </div>
+                                }
                                 </div>
                             ))}
-                        </ScrollToBottom>
+                        </div>
+                        </div>
                         <footer className="StickyFooter">
-                            <Form className="MessageForm" onSubmit={submitMessage}>
+                            <Form className="MessageForm" onSubmit={sendMessage}>
                                 <InputGroup>
-                                <Input className="messageInput" type="text" name="message" id="message" placeholder="Enter message here" value={newchat.message} onChange={onChange} />
+                                <Input className="messageInput" type="text" name="message" id="message" placeholder="Enter message here" value = {chatMessage} onChange={(e) => setChatMessage(e.target.value)}/>
                                     <InputGroupAddon addonType="append">
-                                        <Button className="sendButton" variant="primary" type="submit">Send</Button>
+                                        <Button className="sendButton btn btn-primary" type="submit">Send</Button>
                                     </InputGroupAddon>
                                 </InputGroup>
                             </Form>
@@ -170,6 +226,7 @@ function ChatRoom(props) {
             </Container>
         </div>
     );
+        
 }
 
 export default ChatRoom;

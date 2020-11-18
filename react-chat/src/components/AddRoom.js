@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import {
-    useHistory
-} from "react-router-dom";
+import React, { useContext, useState} from "react";
+import { UserContext } from "../providers/UserProvider";
+import { Link, navigate } from "@reach/router";
+import {auth} from "../Firebase";
+import { firestore } from '../Firebase';
 import {
     Alert,
     Jumbotron,
@@ -14,51 +15,38 @@ import {
 } from 'reactstrap';
 import firebase from '../Firebase';
 
-function AddRoom() {
-    const history = useHistory();
-    const [room, setRoom] = useState({ roomname: '' });
-    const [showLoading, setShowLoading] = useState(false);
-    const ref = firebase.database().ref('rooms/');
+const AddRoom = () => {
+    const [formValue, setFormValue] = useState('');
 
-    const save = (e) => {
+    const writeToFirestore = async (e) => {
         e.preventDefault();
-        setShowLoading(true);
-        ref.orderByChild('roomname').equalTo(room.roomname).once('value', snapshot => {
-            if (snapshot.exists()) {
-                return (
-                    <div>
-                        <Alert color="primary">
-                            Room name already exist!
-                        </Alert>
-                    </div>
-                );
-            } else {
-                const newRoom = firebase.database().ref('rooms/').push();
-                newRoom.set(room);
-                history.goBack();
-                setShowLoading(false);
-            }
-        });
-    };
 
-    const onChange = (e) => {
-        e.persist();
-        setRoom({...room, [e.target.name]: e.target.value});
-    }
+        const roomsRef = firestore.collection('rooms');
+
+        await roomsRef.add({
+          roomname: formValue,
+          idea: "Nothing to see here (yet!)"
+        })
+
+        console.log(formValue);
+
+        setFormValue('');
+        navigate("/");
+    
+  }
 
     return (
-        <div>
-            {showLoading &&
-                <Spinner color="primary" />
-            }
-            <Jumbotron>
-                <h2>Please enter new Room</h2>
-                <Form onSubmit={save}>
+        <div className = "min-vh-100 d-flex align-items-center gradient">
+          
+            <Jumbotron className = "Jumbotron">
+                <h4>Get creative!</h4>
+                <h2>Enter your new group name:</h2>
+                <Form onSubmit = {writeToFirestore}>
                     <FormGroup>
-                        <Label>Room Name</Label>
-                        <Input type="text" name="roomname" id="roomname" placeholder="Enter Room Name" value={room.roomname} onChange={onChange} />
+                        <Label>Group Name</Label>
+                        <Input type="text" name="roomname" id="roomname" onChange={(e) => setFormValue(e.target.value)} placeholder="E.g. The Dark Side" value={formValue} />
                     </FormGroup>
-                    <Button variant="primary" type="submit">
+                    <Button type="submit" disabled = {!formValue} className = "btn btn-primary">
                         Add
                     </Button>
                 </Form>

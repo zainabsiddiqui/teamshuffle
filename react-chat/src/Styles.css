@@ -1,7 +1,12 @@
+body, html {
+    font-family: "Nunito", sans-serif;
+    background-color: #e8eaed;
+}
+
 .Container {
     display: flex;
     padding: 10px;
-  }
+}
     
   .UsersCard {
     margin: 5px 20px;
@@ -13,8 +18,25 @@
     left: 0;
     width: 100%;
     padding: 10px;
-    background-color: #737373;
-    border-top: solid 1px #737373;
+    background-color: #dedede;
+    border-top: solid 1px #dedede;
+  }
+
+  header.StickyHeader {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: #dedede;
+  }
+
+  .greyBackground {
+    background-color: #dedede;
+  }
+
+  .padding50 {
+    padding-top: 65px;
   }
     
   .MessageForm {
@@ -35,18 +57,19 @@
     
   .MessageBox .ChatMessage .RightBubble {
     position: relative;
-    background: #dcf8c6;
+    background: #008080;
     border-top-left-radius: .4em;
     border-bottom-left-radius: .4em;
     border-bottom-right-radius: .4em;
     padding: 5px 10px 10px;
     left: 15%;
+    color: white;
   }
     
   .MessageBox .ChatMessage .RightBubble span.MsgName {
     font-size: 12px;
     font-weight: bold;
-    color: green;
+    color: white;
   }
   .MessageBox .ChatMessage .RightBubble span.MsgDate {
     font-size: 10px;
@@ -60,7 +83,7 @@
     width: 0;
     height: 0;
     border: 27px solid transparent;
-    border-left-color: #dcf8c6;
+    border-left-color: #008080;
     border-right: 0;
     border-top: 0;
     margin-top: -13.5px;
@@ -68,17 +91,18 @@
   }
   .MessageBox .ChatMessage .LeftBubble {
     position: relative;
-    background: lightblue;
+    background: #808080;
     border-top-right-radius: .4em;
     border-bottom-left-radius: .4em;
     border-bottom-right-radius: .4em;
     padding: 5px 10px 10px;
     left: 5%;
+    color: white;
   }
   .MessageBox .ChatMessage .LeftBubble span.MsgName {
     font-size: 12px;
     font-weight: bold;
-    color: blue;
+    color: white;
   }
   .MessageBox .ChatMessage .LeftBubble span.MsgDate {
     font-size: 10px;
@@ -91,7 +115,7 @@
     width: 0;
     height: 0;
     border: 27px solid transparent;
-    border-right-color: lightblue;
+    border-right-color: #808080;
     border-left: 0;
     border-top: 0;
     margin-top: -13.5px;
@@ -128,7 +152,7 @@
     
   .MessageBox .ChatStatus .ChatContentCenter {
     padding: 5px 10px;
-    background-color: #e1e1f7;
+    background-color: white;
     border-radius: 6px;
     font-size: 12px;
     color: #555;
@@ -142,21 +166,31 @@
     height: 600px;
 	background-color: #737373;
   }
+
+  .chatPadding {
+    padding-top: 73px;
+  }
   
   .Jumbotron {
-	  background-color: black;
-      width: 400px;
+	  background-color: white;
+      width: 500px;
 	  height: auto;
       margin: 0 auto;
   }
+
+  .DeleteRoom {
+    float: right;
+/*    font-size: 30px;
+*/  }
   
   .input{
 	  width: 100%;
   }
+
+  .grayBackground {
+      background-color: #e1e1f7;
+  }
  
- .design{
-	 background-color:black;
- }
  
  .logo{
 	display: block;
@@ -175,17 +209,30 @@
 	color: white;
 }
 
-.card{
-	 background-color:#737373;
-	 color: white;
- }
- 
- .exitChatButton{
-	 background-color:black;
- }
- 
- .sendButton{
-	 background-color:black;
+ .idea {
+  font-weight: 400;
  }
 
- 
+.login {
+  display: block;
+  width: 100%;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.gradient {
+  background: #00d2ff;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #3a7bd5, #00d2ff);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #3a7bd5, #00d2ff); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.heartAction {
+    transition: transform .2s; /* Animation */
+}
+
+.heartAction:hover {
+  transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}

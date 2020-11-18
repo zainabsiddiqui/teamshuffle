@@ -1,103 +1,102 @@
-import React, { useState, useEffect } from 'react';
-import {
-    Link,
-    useHistory
-  } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { UserContext } from "../providers/UserProvider";
+import { navigate, Link } from "@reach/router";
+import {auth, getRoomDocuments} from "../Firebase";
+import firebase from '../Firebase';
+import { firestore } from '../Firebase';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import '../Styles.css';
+
 import {
     Jumbotron,
     Spinner,
+    Button,
     ListGroup,
-    ListGroupItem,
-    Button
+    ListGroupItem
 } from 'reactstrap';
-import Moment from 'moment';
-import firebase from '../Firebase';
 
-function RoomList() {
-    const [room, setRoom] = useState([]);
-    const [showLoading, setShowLoading] = useState(true);
-    const [nickname, setNickname] = useState('');
-    const history = useHistory();
+const RoomList = () => {
+  const user = useContext(UserContext);
+  const {displayName} = user;
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setNickname(localStorage.getItem('nickname'));
-            firebase.database().ref('rooms/').on('value', resp => {
-                setRoom([]);
-                setRoom(snapshotToArray(resp));
-                setShowLoading(false);
-            });
-        };
+  const roomsRef = firestore.collection('rooms');
+  const query = roomsRef.orderBy("roomname");
+
+  const [rooms] = useCollectionData(query, { idField: 'id'});
+  console.log(rooms);
+
+  const chatsRef = firestore.collection('chats');
+
+  const enterChatRoom = async (roomname) => {
+
+    await chatsRef.add({
+          message: displayName + " joined " + roomname,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          roomname: roomname,
+          displayName: displayName,
+          type: "join"
+    });
+
+    let roomURL = "chatroom/" + roomname;
+    console.log(roomURL);
+    navigate(roomURL);
+  }
+
+  const deleteChatRoom = async (roomname) => {
+    var deletingRoomQuery = firestore.collection('rooms').where('roomname','==', roomname);
+    deletingRoomQuery.get().then(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+        doc.ref.delete();
+      });
+    });
+
+    var deletingChatsQuery = firestore.collection('chats').where('roomname','==', roomname);
+    deletingChatsQuery.get().then(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+        doc.ref.delete();
+      });
+    });
+
+    navigate("/")
+
+  }
+
+
+
+
+  return (
+    <div>
       
-        fetchData();
-    }, []);
-
-    const snapshotToArray = (snapshot) => {
-        const returnArr = [];
-
-        snapshot.forEach((childSnapshot) => {
-            const item = childSnapshot.val();
-            item.key = childSnapshot.key;
-            returnArr.push(item);
-        });
-
-        return returnArr;
-    }
-
-    const enterChatRoom = (roomname) => {
-        const chat = { roomname: '', nickname: '', message: '', date: '', type: '' };
-        chat.roomname = roomname;
-        chat.nickname = nickname;
-        chat.date = Moment(new Date()).format('DD/MM/YYYY HH:mm:ss');
-        chat.message = `${nickname} entered the room`;
-        chat.type = 'join';
-        const newMessage = firebase.database().ref('chats/').push();
-        newMessage.set(chat);
-
-        firebase.database().ref('roomusers/').orderByChild('roomname').equalTo(roomname).on('value', (resp) => {
-            let roomuser = [];
-            roomuser = snapshotToArray(resp);
-            const user = roomuser.find(x => x.nickname === nickname);
-            if (user !== undefined) {
-              const userRef = firebase.database().ref('roomusers/' + user.key);
-              userRef.update({status: 'online'});
-            } else {
-              const newroomuser = { roomname: '', nickname: '', status: '' };
-              newroomuser.roomname = roomname;
-              newroomuser.nickname = nickname;
-              newroomuser.status = 'online';
-              const newRoomUser = firebase.database().ref('roomusers/').push();
-              newRoomUser.set(newroomuser);
-            }
-        });
-    
-        history.push('/chatroom/' + roomname);
-    }
-
-    const logout = () => {
-        localStorage.removeItem('nickname');
-        history.push('/login');
-    }
-
-    return (
-        <div>
-            {showLoading &&
-                <Spinner color="primary" />
-            }
-            <Jumbotron>
-                <h3>{nickname} <Button onClick={() => { logout() }}>Logout</Button></h3>
-                <h2>Room List</h2>
+      <Jumbotron className="Jumbotron1">
+          <div className = "float-right">
+            <button className = "btn btn-info mt-1"><Link to="profilepage" className = "profilepage text-decoration-none text-white">
+            Profile
+          </Link></button>
+            &nbsp;
+            <button className = "btn btn-dark mt-1 mr-1" onClick = {() => {auth.signOut()}}>Sign Out</button>
+          </div>
+          <h4 className="h4">Welcome, {displayName}! </h4>
+          <h1 className="h1">Group Dashboard 🕊️</h1>
+          <div className = "mt-3">
+            <div className = "mt-1 mb-1">
+              If a group is not available or you don't see one you'd like to join, feel free to
+              <Link className = "addroom" to="addroom"> create one yourself</Link>.
+            </div>
+            <ListGroup>
+              {rooms && rooms.map(room => <ListGroupItem className = "listGroup" key={room.id} action onClick={() => { enterChatRoom(room.roomname) }}>
+                <span>
+                  <span className = "font-weight-bold">{room.roomname}</span>
+                  <a href = "" action onClick={() => { deleteChatRoom(room.roomname) }} className = "DeleteRoom">✖</a>
+                </span>
                 <div>
-                    <Link to="/addroom">Add Room</Link>
+                  <span className ="idea">Idea: {room.idea}</span>
                 </div>
-                <ListGroup>
-                    {room.map((item, idx) => (
-                        <ListGroupItem key={idx} action onClick={() => { enterChatRoom(item.roomname) }}>{item.roomname}</ListGroupItem>
-                    ))}
-                </ListGroup>
-            </Jumbotron>
-        </div>
-    );
-}
+                </ListGroupItem>)}
+            </ListGroup>
+          </div>
+        </Jumbotron>
+    </div>
+  );
+};
 
 export default RoomList;
