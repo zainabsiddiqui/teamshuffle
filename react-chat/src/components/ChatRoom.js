@@ -38,39 +38,63 @@ const ChatRoom = () => {
     const [chatMessage, setChatMessage] = useState('');
 
 
-    /*var docRef = firestore.collection("rooms");
-    var topic;
+    var docRef = firestore.collection("rooms");
+    // var topic;
 
-    const grabTopicIdea = async (ref) => {
+    // const promises = [];
 
-    let query = ref.where('roomname', '==', room)
-    .get()
-    .then(snapshot => {
-    if (snapshot.empty) {
-      console.log('No matching documents.');
-      return;
-    }  
+    // const grabTopicIdea = async (ref) => {
 
-    // let topic = snapshot.idea;
-    // console.log(topic);
-    // return topic;
+    // let query = ref.where('roomname', '==', room)
+    // .get()
+    // .then(snapshot => {
+    // if (snapshot.empty) {
+    //   console.log('No matching documents.');
+    //   return;
+    // }  
 
-    snapshot.forEach(doc => {
-      // Do something
-        return String.toString(doc.data().idea);
+    // snapshot.forEach(doc => {
+    //   // Do something
+    //     promises.push(doc.data().idea);
+    // });
+    //   })
+    //   .catch(err => {
+    //     console.log('Error getting documents', err);
+    //   });
+    // }
+
+
+    function getTopic() {
+    return new Promise((resolve, reject) => {
+            firestore
+            .collection("rooms")
+            .where("roomname", "==", room)
+            .get()
+            .then(snapshot => {
+                if (snapshot.empty) {
+                    console.log("No matching documents.");
+                }
+
+                snapshot.forEach(doc => {
+                //   // Do something
+                    resolve(doc.data().idea)
+                });
+            })
+            .catch(function(error) {
+                console.log("Error getting document:", error);
+                reject(error);
+            });
     });
-      })
-      .catch(err => {
-        console.log('Error getting documents', err);
-      });
-    }
+}      
 
-    grabTopicIdea(docRef).then((idea) => {
-        console.log(idea);
-        topic = idea;
-     }).catch((err) => { console.log("Error: ", err); });
-    */
+    
+        getTopic().then((data) => {
+            window.topicText = data;
+        }).catch((error) => {
+            console.log(error + "An error occurred. Duh!")
+        });
 
+    
     // let docRef = firestore.collection('rooms').where("roomname", "==", room);
 
     // const getTopic = async (ref) => {
@@ -96,29 +120,6 @@ const ChatRoom = () => {
 
     // console.log(promise);
 
-    function getTopic() {
-    return new Promise((resolve, reject) => {
-            firestore
-            .collection("rooms")
-            .where("roomname", "==", room)
-            .get()
-            .then(function(doc) {
-                if (doc.exists) {
-                    resolve(doc.data().idea); // <== Pay attention to this line, you resolve rather than return
-                }
-            })
-            .catch(function(error) {
-                console.log("Error getting document:", error);
-                reject(error);
-            });
-        });
-    }
-
-    getTopic().then((data) => {
-        console.log(data);
-        }).catch((error) => {
-    // An error occured
-        });
 
     const sendMessage = async (e) => {
         e.preventDefault();
@@ -164,7 +165,7 @@ const ChatRoom = () => {
                     <Col xs="4">
             <header className = "StickyHeader text-center">
             <h4 className = "font-weight-bold">{room} ✨</h4>
-            <h6>Idea:</h6>
+            <h6>Idea: {window.topicText} </h6>
             
             </header>
                         <div className = "padding50">
