@@ -16,6 +16,8 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState(null);
+  //setInstructor - used on signup for user to decide if they are an instructor or student; defaulted to false
+  const [instructor, setInstructor] = useState(false);
 
   const createUserWithEmailAndPasswordHandler = async (event, email, password) => {
     event.preventDefault();
@@ -23,7 +25,7 @@ const SignUp = () => {
       console.log("welp we got here i guess")
       const {user} = await auth.createUserWithEmailAndPassword(email, password);
       console.log("wtf we logged in")
-      generateUserDocument(user, {displayName});
+      generateUserDocument(user, {displayName, instructor});
       navigate("/");
     }
     catch(error){
@@ -34,6 +36,7 @@ const SignUp = () => {
     setEmail("");
     setPassword("");
     setDisplayName("");
+    setInstructor(false);
   };
 
   const onChangeHandler = event => {
@@ -106,6 +109,21 @@ const SignUp = () => {
               id="userPassword"
               onChange = {(event) => onChangeHandler(event)}
             />
+            <div className = "text-center mr-5 mb-3">
+            Instructor?
+            &nbsp;&nbsp;&nbsp; &nbsp;
+              <label class="switch">
+                <input 
+                  name="instructor"
+                  type="checkbox"
+                  id="instructorInput"
+                  checked = {instructor}
+                  onChange={() => setInstructor(!instructor)}
+                ></input>
+                <span class="slider round"></span>
+              </label>
+              &nbsp; &nbsp;
+            </div>
           </div>
           <button className="mx-auto login btn btn-info" onClick = {(event) => createUserWithEmailAndPasswordHandler(event, email, password)}>
             Sign up

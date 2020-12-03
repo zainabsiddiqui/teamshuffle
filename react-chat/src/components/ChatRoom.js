@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, forceUpdate } from "react";
 import { UserContext } from "../providers/UserProvider";
 import { navigate, Link, useParams } from "@reach/router";
 import {auth, getRoomDocuments} from "../Firebase";
@@ -33,10 +33,11 @@ const ChatRoom = () => {
 
     const [chats] = useCollectionData(query, { idField: 'id' });
 
+    const[topic, setTopic] = useState("");
+
     console.log(chats);
 
     const [chatMessage, setChatMessage] = useState('');
-
 
     var docRef = firestore.collection("rooms");
     // var topic;
@@ -89,7 +90,8 @@ const ChatRoom = () => {
 
     
         getTopic().then((data) => {
-            window.topicText = data;
+            // window.topicText = data;
+            setTopic(data);
         }).catch((error) => {
             console.log(error + "An error occurred. Duh!")
         });
@@ -148,13 +150,15 @@ const ChatRoom = () => {
         navigate("/");
     }
 
-    const setTopic = async (message) => {
+    const updateTopic = async (message) => {
         var updateTopicQuery = firestore.collection('rooms').where('roomname','==', room);
         updateTopicQuery.get().then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
             doc.ref.update({idea: message});
           });
         });
+
+        setTopic(message);
     }
 
     return (
@@ -165,7 +169,7 @@ const ChatRoom = () => {
                     <Col xs="4">
             <header className = "StickyHeader text-center">
             <h4 className = "font-weight-bold">{room} ✨</h4>
-            <h6>Idea: {window.topicText} </h6>
+            <h6>Idea: { topic } </h6>
             
             </header>
                         <div className = "padding50">
@@ -202,7 +206,7 @@ const ChatRoom = () => {
                                                 {chat.displayName === displayName ?
                                                     <span className="MsgName">Me</span>
                                                     :
-                                                    <span className="MsgName">{chat.displayName}<span className = "float-right heartAction" action onClick={() => { setTopic(chat.message) }}>🤍</span></span>
+                                                    <span className="MsgName">{chat.displayName}<span className = "float-right heartAction" action onClick={() => { updateTopic(chat.message); }}>🤍</span></span>
                                                 }
                                                 <p>{chat.message}</p>
                                                 </div>
