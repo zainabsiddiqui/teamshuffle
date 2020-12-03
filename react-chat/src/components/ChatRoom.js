@@ -33,6 +33,8 @@ const ChatRoom = () => {
 
     const [chats] = useCollectionData(query, { idField: 'id' });
 
+    const roomUsersRef = firestore.collection('roomusers');
+
     const[topic, setTopic] = useState("");
 
     console.log(chats);
@@ -145,6 +147,13 @@ const ChatRoom = () => {
           roomname: room,
           displayName: displayName,
           type: "exit"
+        });
+
+        var updateStatusQuery = firestore.collection('roomusers').where('roomname','==', room);
+        updateStatusQuery.get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.update({status: "offline"});
+          });
         });
 
         navigate("/");
