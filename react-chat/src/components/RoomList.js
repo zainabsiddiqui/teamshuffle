@@ -28,8 +28,15 @@ const RoomList = () => {
   const chatsRef = firestore.collection('chats');
 
   const roomUsersRef = firestore.collection('roomusers');
-
+  
   const enterChatRoom = async (roomname) => {
+
+    firestore.collection("roomusers").doc(user.uid).set({
+        roomname: roomname,
+        displayName: displayName,
+        status: "online"
+    });
+    
 
     await chatsRef.add({
           message: displayName + " joined " + roomname,
@@ -37,12 +44,6 @@ const RoomList = () => {
           roomname: roomname,
           displayName: displayName,
           type: "join"
-    });
-
-    await roomUsersRef.add({
-          roomname: roomname,
-          displayName: displayName,
-          status: "online"
     });
 
     let roomURL = "chatroom/" + roomname;

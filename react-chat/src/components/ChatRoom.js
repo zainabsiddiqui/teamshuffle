@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, forceUpdate } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { UserContext } from "../providers/UserProvider";
 import { navigate, Link, useParams } from "@reach/router";
 import {auth, getRoomDocuments} from "../Firebase";
@@ -26,6 +26,8 @@ const ChatRoom = () => {
     const user = useContext(UserContext);
     const { displayName } = user;
 
+    const [users, setUsers] = useState([]);
+
     const { room } = useParams();
 
     const chatsRef = firestore.collection('chats');
@@ -37,93 +39,42 @@ const ChatRoom = () => {
 
     const[topic, setTopic] = useState("");
 
-    console.log(chats);
-
     const [chatMessage, setChatMessage] = useState('');
 
     var docRef = firestore.collection("rooms");
-    // var topic;
-
-    // const promises = [];
-
-    // const grabTopicIdea = async (ref) => {
-
-    // let query = ref.where('roomname', '==', room)
-    // .get()
-    // .then(snapshot => {
-    // if (snapshot.empty) {
-    //   console.log('No matching documents.');
-    //   return;
-    // }  
-
-    // snapshot.forEach(doc => {
-    //   // Do something
-    //     promises.push(doc.data().idea);
-    // });
-    //   })
-    //   .catch(err => {
-    //     console.log('Error getting documents', err);
-    //   });
-    // }
 
 
-    function getTopic() {
-    return new Promise((resolve, reject) => {
-            firestore
-            .collection("rooms")
-            .where("roomname", "==", room)
-            .get()
-            .then(snapshot => {
-                if (snapshot.empty) {
-                    console.log("No matching documents.");
-                }
-
-                snapshot.forEach(doc => {
-                //   // Do something
-                    resolve(doc.data().idea)
+    useEffect(() => {
+        const fetchData = async () => {
+            firestore.collection("rooms").where("roomname", "==", room)
+            .onSnapshot(function (querySnapshot) {
+                setTopic("");
+                querySnapshot.forEach(function(doc) {
+                    setTopic(doc.data().idea)
                 });
-            })
-            .catch(function(error) {
-                console.log("Error getting document:", error);
-                reject(error);
             });
-    });
-}      
+        };
+      
+        fetchData();
+    }, [room]);
 
-    
-        getTopic().then((data) => {
-            // window.topicText = data;
-            setTopic(data);
-        }).catch((error) => {
-            console.log(error + "An error occurred. Duh!")
-        });
-
-    
-    // let docRef = firestore.collection('rooms').where("roomname", "==", room);
-
-    // const getTopic = async (ref) => {
-
-    //     const topic = await ref.get()
-    //       .then(snapshot => {
-    //         if (snapshot.empty) {
-    //             console.log('No matching documents.');
-    //             return;
-    //         } 
-
-    //         snapshot.forEach(doc => {
-    //             return doc.data().idea;
-    //         });
-
-    //       })
-    //       .catch(err => {
-    //         console.log('Error getting document', err);
-    //       });
-    // }
-
-    // var promise = getTopic(docRef);
-
-    // console.log(promise);
-
+    useEffect(() => {
+        const fetchData = async () => {
+            firestore.collection("roomusers").where("roomname", "==", room)
+            .onSnapshot(function (querySnapshot) {
+                setUsers([]);
+                var onlineusers = [];
+                querySnapshot.forEach(function(doc) {
+                    if(doc.data().status == "online") {
+                        onlineusers.push(doc.data());
+                    }
+                });
+                setUsers(onlineusers);
+            });
+        };
+      
+        fetchData();
+    }, [room]);
 
     const sendMessage = async (e) => {
         e.preventDefault();
@@ -152,7 +103,9 @@ const ChatRoom = () => {
         var updateStatusQuery = firestore.collection('roomusers').where('roomname','==', room);
         updateStatusQuery.get().then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
-            doc.ref.update({status: "offline"});
+            if(doc.data().displayName == displayName){
+                doc.ref.update({status: "offline"});
+            }
           });
         });
 
@@ -166,8 +119,6 @@ const ChatRoom = () => {
             doc.ref.update({idea: message});
           });
         });
-
-        setTopic(message);
     }
 
     return (
@@ -191,13 +142,13 @@ const ChatRoom = () => {
                                     </CardSubtitle>
                                 </CardBody>
                             </Card>
-                            
-                                <Card className="UsersCard">
+                            {users.map((user, id) =>
+                                <Card className="UsersCard" key = {id}>
                                     <CardBody className="card bg-white">
-                                        <CardSubtitle>{ displayName }</CardSubtitle>
+                                        <CardSubtitle>{ user.displayName }</CardSubtitle>
                                     </CardBody>
                                 </Card>
-                        
+                            )}
                         </div>
                     </Col>
                     <Col xs="8">
