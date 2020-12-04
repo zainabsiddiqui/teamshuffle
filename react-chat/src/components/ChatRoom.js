@@ -28,7 +28,7 @@ const ChatRoom = () => {
 
     const [users, setUsers] = useState([]);
 
-    const { room } = useParams();
+    const { room, id } = useParams();
 
     const chatsRef = firestore.collection('chats');
     const query = chatsRef.where("roomname", "==", room);
@@ -40,9 +40,6 @@ const ChatRoom = () => {
     const[topic, setTopic] = useState("");
 
     const [chatMessage, setChatMessage] = useState('');
-
-    var docRef = firestore.collection("rooms");
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -108,6 +105,10 @@ const ChatRoom = () => {
             }
           });
         });
+
+        firestore.collection("rooms").doc(id).update({
+            count: firebase.firestore.FieldValue.increment(-1)
+        })
 
         navigate("/");
     }

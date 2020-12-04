@@ -25,7 +25,8 @@ const AddRoom = () => {
 
         await roomsRef.add({
           roomname: formValue,
-          idea: "Nothing to see here (yet!)"
+          idea: "Nothing to see here (yet!)",
+          count: 0
         })
 
         console.log(formValue);

@@ -23,20 +23,22 @@ const RoomList = () => {
   const query = roomsRef.orderBy("roomname");
 
   const [rooms] = useCollectionData(query, { idField: 'id'});
-  console.log(rooms);
 
   const chatsRef = firestore.collection('chats');
 
   const roomUsersRef = firestore.collection('roomusers');
   
-  const enterChatRoom = async (roomname) => {
+  const enterChatRoom = async (roomname, roomid) => {
 
     firestore.collection("roomusers").doc(user.uid).set({
         roomname: roomname,
         displayName: displayName,
         status: "online"
     });
-    
+
+    firestore.collection("rooms").doc(roomid).update({
+        count: firebase.firestore.FieldValue.increment(1)
+    })
 
     await chatsRef.add({
           message: displayName + " joined " + roomname,
@@ -46,7 +48,8 @@ const RoomList = () => {
           type: "join"
     });
 
-    let roomURL = "chatroom/" + roomname;
+
+    let roomURL = "chatroom/" + roomname + "/" + roomid;
     console.log(roomURL);
     navigate(roomURL);
   }
@@ -92,11 +95,14 @@ const RoomList = () => {
               <Link className = "addroom" to="addroom"> create one yourself</Link>.
             </div>
             <ListGroup>
-              {rooms && rooms.map(room => <ListGroupItem className = "listGroup" key={room.id} action onClick={() => { enterChatRoom(room.roomname) }}>
+              {rooms && rooms.map(room => <ListGroupItem className = "listGroup" key={room.id} action onClick={() => { enterChatRoom(room.roomname, room.id) }}>
                 <span>
                   <span className = "font-weight-bold">{room.roomname}</span>
                   <a href = "" action onClick={() => { deleteChatRoom(room.roomname) }} className = "DeleteRoom">✖</a>
                 </span>
+                <div>
+                  <span className = "count">Members: {room.count}/5</span>
+                </div>
                 <div>
                   <span className ="idea">Idea: {room.idea}</span>
                 </div>
