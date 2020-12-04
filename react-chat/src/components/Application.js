@@ -38,6 +38,7 @@ function Application() {
           <AddRoom path = "addroom" />
           <ProfilePage path = "profilepage" />
           <ChatRoom path = "chatroom/:room" />
+          <InstructorPanel path = "groupSettings"/>
         </Router>
         :
         // User is not even authenticated, so only non-authenticated routes

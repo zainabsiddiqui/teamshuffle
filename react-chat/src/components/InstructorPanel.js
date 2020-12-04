@@ -1,40 +1,52 @@
 import React, {useState} from "react";
-import { Link, navigate } from "@reach/router";
+import { UserContext } from "../providers/UserProvider";
+import { navigate, Link } from "@reach/router";
+import {auth} from "../Firebase";
 import {
-    Jumbotron, 
+    Alert,
+    Jumbotron,
     Spinner,
     Form,
     Button,
-    FormGroup,
+    FormGroup, 
     Label, 
     Input
-  } from 'reactstrap';
+} from 'reactstrap';
 
   const InstructorPanel = () => {
+    const [groupSize, setGroupSize] = useState(5); //Set default groupSize to 5, can be altered by the instructor upon class creation
 
-  var groupSize = 5; //Set default groupSize to 5, can be altered by the instructor upon class creation
+    const getSetGroupSize = () => { //will return the groupSize value to console, should setGroup size to new value
+        setGroupSize(document.getElementById("newSize").value);
+        console.log(groupSize);   
+    };
 
   return(
-      <div>
-          <Jumbotron className="Jumbotron pt-4 pb-4">
-              <h2 className="mt-0 pt-0 text-center bold">Group Settings</h2>
-            <div>
-                <label htmlFor="groupSize" className="block">
-                Max Group Size:
-                </label>
-                &nbsp; &nbsp;
-                <input
-                    type="number"
-                    className="mt-1 w-50"
-                    name="groupSize"
-                    value={groupSize}
-                    id="groupSize"
-                    //onChange={event => onChangeHandler(event)}
-                />
+    <div className = "min-vh-100 d-flex align-items-center gradient">
+        <Jumbotron className = "Jumbotron">
+            <h3 className = "text-center pt-0 pb-0">Group Settings</h3>
+            <div className>
+                <h5 className = "text-center pt-0 pb-0">Group Size</h5>
             </div>
-              
-          </Jumbotron>
-      </div>
+            <div className>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                <input
+                    type = "number"
+                    className = "text-center mt-1 w-50"
+                    min="2"
+                    max="10"
+                    defaultValue = {groupSize}
+                    id = "newSize">
+                </input>
+            </div>
+            &nbsp; &nbsp; &nbsp;
+            <div className>
+                <button className="mx-auto login btn btn-info" onClick = {getSetGroupSize}>
+                    Submit
+                </button>
+            </div>
+        </Jumbotron>
+    </div>
   );
 };
  export default InstructorPanel;
