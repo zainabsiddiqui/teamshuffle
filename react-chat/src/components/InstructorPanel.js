@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import { UserContext } from "../providers/UserProvider";
 import { navigate, Link } from "@reach/router";
-import {auth} from "../Firebase";
+import {auth, firestore} from "../Firebase";
 import {
     Alert,
     Jumbotron,
@@ -50,6 +50,7 @@ import {
   );
 };
  export default InstructorPanel;
+ 
 
  
 //Currently only needs to inhibit group size, should only be visible to instructor(s)

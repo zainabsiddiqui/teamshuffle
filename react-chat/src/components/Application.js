@@ -13,16 +13,16 @@ import ProfilePage from './ProfilePage';
 
 function Application() {
   const user = useContext(UserContext);
-  var role;
+  var instructor;
   user ?
-  {role} = user 
+  {instructor} = user 
   :
   console.log("User is null");
   return (
     // Check if user is authenticated
      user ?
       // Check whether current user is an instructor
-      role == "Instructor" ?
+       instructor ?
         // Specific instructor-only routes
         <Router>
         <RoomList path = "/" />
@@ -38,7 +38,6 @@ function Application() {
           <AddRoom path = "addroom" />
           <ProfilePage path = "profilepage" />
           <ChatRoom path = "chatroom/:room" />
-          <InstructorPanel path = "groupSettings"/>
         </Router>
         :
         // User is not even authenticated, so only non-authenticated routes
