@@ -48,7 +48,7 @@ const PasswordReset = () => {
       <div className="mx-auto w-11/12 md:w-2/4 rounded py-8 px-4 md:px-8">
         <form action="">
           {emailHasBeenSent && (
-            <div className = "text-center">
+            <div className = "text-center alert alert-primary">
               An email has been sent to you!
             </div>
           )}

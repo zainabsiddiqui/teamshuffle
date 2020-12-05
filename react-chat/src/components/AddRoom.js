@@ -42,15 +42,17 @@ const AddRoom = () => {
             <Jumbotron className = "Jumbotron">
                 <h4>Get creative!</h4>
                 <h2>Enter your new group name:</h2>
-                <Form onSubmit = {writeToFirestore}>
+                <Form onSubmit = {writeToFirestore} className = "mb-2">
                     <FormGroup>
-                        <Label>Group Name</Label>
                         <Input type="text" name="roomname" id="roomname" onChange={(e) => setFormValue(e.target.value)} placeholder="E.g. The Dark Side" value={formValue} />
                     </FormGroup>
                     <Button type="submit" disabled = {!formValue} className = "btn btn-primary">
                         Add
                     </Button>
                 </Form>
+                <Link to="/" className="text-center mb-0 pb-0">
+                        &larr; back to dashboard
+                </Link>             
             </Jumbotron>
         </div>
     );

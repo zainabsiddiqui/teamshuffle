@@ -38,7 +38,7 @@ const RoomList = () => {
 
     firestore.collection("rooms").doc(roomid).update({
         count: firebase.firestore.FieldValue.increment(1)
-    })
+    });
 
     await chatsRef.add({
           message: displayName + " joined " + roomname,
@@ -52,6 +52,39 @@ const RoomList = () => {
     let roomURL = "chatroom/" + roomname + "/" + roomid;
     console.log(roomURL);
     navigate(roomURL);
+  }
+
+  const shuffle = async () => {
+    var randomInt = getRandomInt(rooms.length);
+    console.log(randomInt);
+    console.log(rooms[randomInt].roomname);
+    console.log(rooms[randomInt].id);
+
+    firestore.collection("roomusers").doc(user.uid).set({
+        roomname: rooms[randomInt].roomname,
+        displayName: displayName,
+        status: "online"
+    });
+
+    firestore.collection("rooms").doc(rooms[randomInt].id).update({
+        count: firebase.firestore.FieldValue.increment(1)
+    });
+
+    await chatsRef.add({
+          message: displayName + " joined " + rooms[randomInt].roomname,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          roomname: rooms[randomInt].roomname,
+          displayName: displayName,
+          type: "join"
+    });
+
+    let roomURL = "chatroom/" + rooms[randomInt].roomname + "/" + rooms[randomInt].id;
+    navigate(roomURL);
+
+  }
+
+  const getRandomInt = (max) => {
+    return Math.floor(Math.random() * Math.floor(max));
   }
 
   const deleteChatRoom = async (roomname) => {
@@ -79,7 +112,7 @@ const RoomList = () => {
   return (
     <div>
       
-      <Jumbotron className="Jumbotron1">
+    <Jumbotron className = "Jumbotron1">
           <div className = "float-right">
             <button className = "btn btn-info mt-1"><Link to="profilepage" className = "profilepage text-decoration-none text-white">
             Update Profile
@@ -90,10 +123,11 @@ const RoomList = () => {
           <h4 className="h4">Welcome, {displayName}! </h4>
           <h1 className="h1">Group Dashboard 🕊️</h1>
           <div className = "mt-3">
-            <div className = "mt-1 mb-1">
+            <div className = "mb-1 mt-1">
               If a group is not available or you don't see one you'd like to join, feel free to
               <Link className = "addroom" to="addroom"> create one yourself</Link>.
             </div>
+            
             <ListGroup>
               {rooms && rooms.map(room => <ListGroupItem className = "listGroup" key={room.id} action onClick={() => { enterChatRoom(room.roomname, room.id) }}>
                 <span>
@@ -108,8 +142,13 @@ const RoomList = () => {
                 </div>
                 </ListGroupItem>)}
             </ListGroup>
+            <hr />
+            <div className = "text-center">
+            Or if you're feeling adventurous...
+            <button className = "btn btn-secondary mb-2 mt-2 w-100" onClick = {() => {shuffle()}}>Shuffle Me</button>
+            </div>
           </div>
-        </Jumbotron>
+    </Jumbotron>
     </div>
   );
 };
