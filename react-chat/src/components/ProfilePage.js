@@ -22,15 +22,25 @@ const ProfilePage = () => {
   const [major, setMajor] = useState('');
   const [infoUpdated, setInfoUpdated] = useState(false);
   const [error, setError] = useState(null);
+  // const [listOfStrengths, setListOfStrengths] = useState([]);
+  var arrStrengths = [];
+  var isChecked;
 
    const writeToFirestore = async (e) => {
         e.preventDefault();
+
+        var checkStrengths = document.querySelectorAll('input[type=checkbox]:checked');
+
+        for(var i = 0; i < checkStrengths.length; i++) {
+          arrStrengths.push(checkStrengths[i].value);
+        }
 
         const userRef = firestore.collection('users').doc(user.uid);
 
         userRef.update({
           bio: bio,
-          major: major
+          major: major,
+          strengths: arrStrengths
         }).then(() => {
           setInfoUpdated(true);
           setTimeout(() => {setInfoUpdated(false)}, 3000);
@@ -42,7 +52,6 @@ const ProfilePage = () => {
         // setBio('');
         // navigate("/");  
   }
-  
 
   return (
     <div className = "min-vh-100 d-flex align-items-center gradient">
@@ -81,47 +90,48 @@ const ProfilePage = () => {
           <small className = "form-text text-muted">Add a little blurb about your interests.</small>
         
           <h6 className = "mb-1 mt-3">Your Major:</h6>
-          <select class = "form-control" onChange={(e) => setMajor(e.target.value)} value = {major}>
-            <option>Computer Science</option>
-            <option>Information Technology</option>
+          <select class = "form-control" value = {major} id = "majorSelect" onChange={(e) => setMajor(e.target.value)} >
+            <option value = ""></option>
+            <option value = "Computer Science">Computer Science</option>
+            <option value = "Information Technology">Information Technology</option>
           </select>
 
           <h6 className = "mb-1 mt-3">Your Strengths:</h6>
           <small className = "form-text text-muted">Pick as many as you'd like.</small>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="software" />
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Software Dev"/>
             <label class="form-check-label" for="inlineCheckbox1">Software Dev</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="management" />
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="Project Management"/>
             <label class="form-check-label" for="inlineCheckbox2">Project Management</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="writing" />
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Technical Writing"/>
             <label class="form-check-label" for="inlineCheckbox1">Technical Writing</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="design" />
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Web Design"/>
             <label class="form-check-label" for="inlineCheckbox1">Web Design</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="viz" />
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Data Viz"/>
             <label class="form-check-label" for="inlineCheckbox1">Data Viz</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="machinelearning" />
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Machine Learning"/>
             <label class="form-check-label" for="inlineCheckbox1">Machine Learning</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="leadership" />
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Leadership"/>
             <label class="form-check-label" for="inlineCheckbox1">Leadership</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="webdev" />
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Web Dev"/>
             <label class="form-check-label" for="inlineCheckbox1">Web Dev</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="communication" />
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Communication"/>
             <label class="form-check-label" for="inlineCheckbox1">Communication</label>
           </div>
 

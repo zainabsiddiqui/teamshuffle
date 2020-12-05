@@ -127,7 +127,7 @@ const RoomList = () => {
             <div className = "mb-1 mt-1">
               <h4 className = "mb-0">Groups:</h4>
               Pssst. Have a novel idea for a project?&nbsp;
-              <Link className = "addroom" to="addroom">You can create your own group.</Link>
+              <Link className = "addroom" to="addroom">Create your own group.</Link>
             </div>
             
             <ListGroup>

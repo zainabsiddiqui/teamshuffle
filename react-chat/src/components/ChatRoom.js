@@ -17,8 +17,13 @@ import {
     Form,
     InputGroup,
     Input,
-    InputGroupAddon
+    InputGroupAddon,
+    Modal,
+    ModalBody,
+    ModalHeader,
+    ModalFooter
 } from 'reactstrap';
+
 
 const ChatRoom = () => {
     const dummy = useRef();
@@ -27,6 +32,7 @@ const ChatRoom = () => {
     const { displayName } = user;
 
     const [users, setUsers] = useState([]);
+    const [onlineusers, setOnlineUsers] = useState([]);
 
     const { room, id } = useParams();
 
@@ -40,6 +46,15 @@ const ChatRoom = () => {
     const[topic, setTopic] = useState("");
 
     const [chatMessage, setChatMessage] = useState('');
+
+    const [modal, setModal] = useState(false);
+
+    const toggle = () => setModal(!modal);
+
+    const mailTo = (email) => {
+        window.location.href = "mailto:" + email;
+    }
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,18 +75,41 @@ const ChatRoom = () => {
             firestore.collection("roomusers").where("roomname", "==", room)
             .onSnapshot(function (querySnapshot) {
                 setUsers([]);
-                var onlineusers = [];
+                var onlineroomusers = [];
                 querySnapshot.forEach(function(doc) {
                     if(doc.data().status == "online") {
-                        onlineusers.push(doc.data());
+                        onlineroomusers.push(doc.data());
                     }
                 });
-                setUsers(onlineusers);
+                setUsers(onlineroomusers);
             });
         };
       
         fetchData();
     }, [room]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+                firestore.collection("users").where("displayName", "!=", null)
+                .onSnapshot(function (querySnapshot) {
+                    setOnlineUsers([]);
+                    var actualusers = [];
+                    querySnapshot.forEach(function(doc) {
+                        for(var i = 0; i < users.length; i++) {
+                            if(users[i].displayName == doc.data().displayName){
+                                actualusers.push(doc.data());
+                                console.log(doc.data().strengths);
+                            }
+                        }
+                    
+                    });
+                    setOnlineUsers(actualusers);
+                });
+        }
+
+        fetchData();
+    }, [users]);
+
 
     const sendMessage = async (e) => {
         e.preventDefault();
@@ -130,26 +168,74 @@ const ChatRoom = () => {
                     <Col xs="4">
             <header className = "StickyHeader text-center">
             <h4 className = "font-weight-bold">{room} ✨</h4>
-            <h6>Idea: { topic } </h6>
+            <h6>Tentative Idea: { topic } </h6>
             
             </header>
                         <div className = "padding50">
                             <Card className="UsersCard">
                                 <CardBody className="card bg-white">
                                     <CardSubtitle>
-                                        <Button className="exitChatButton btn btn-info" type="button" onClick={() => { exitChat() }}>
+                                        <Button className="exitChatButton btn btn-dark" type="button" onClick={() => { exitChat() }}>
                                             Exit Group
                                         </Button>
                                     </CardSubtitle>
                                 </CardBody>
                             </Card>
-                            {users.map((user, id) =>
-                                <Card className="UsersCard" key = {id}>
-                                    <CardBody className="card bg-white">
-                                        <CardSubtitle>{ user.displayName }</CardSubtitle>
-                                    </CardBody>
-                                </Card>
-                            )}
+                            <Card className="UsersCard">
+                                <CardBody className="card bg-white">
+                                    <h5>Members</h5>
+                                    <hr className = "pt-0 mt-0" />
+                                    {onlineusers.map((user, id) =>
+                                        <div key = {id}>
+                                            {user.displayName == displayName ?
+                                                <CardSubtitle className = "p-1">{ user.displayName } (You)</CardSubtitle>
+                                            :
+                                            <span>
+                                                <CardSubtitle className = "p-1">{ user.displayName } <button onClick={toggle} class = "badge badge-info">Profile</button></CardSubtitle>
+                                                <Modal isOpen={modal} toggle={toggle}>
+                                                    <ModalBody>
+                                                        <div
+                                                          style={{
+                                                            background: `url(${user.photoURL || 'https://image.flaticon.com/icons/png/512/194/194938.png'})  no-repeat center center`,
+                                                            backgroundSize: "cover",
+                                                            height: "75px",
+                                                            width: "75px"
+                                                          }}
+                                                          className="mt-2 mb-0 mx-auto"
+                                                        ></div>
+                                                        <div className>
+                                                        <h4 className = "text-center mt-2 mb-0">Hi, I'm {user.displayName}!</h4>
+                                                        { user.bio !== "" && (<div>
+                                                        <h6 className = "text-center">I'm a <span className = "text-primary">{ user.major }</span> major.</h6>
+                                                        <p className = "text-center border bg-dark text-white p-2 rounded mt-3"> { user.bio }</p>
+                                                        <p className = "text-center mb-0">My strengths include:</p>
+                                                        <div className = "text-center mt-0 mb-4">
+                                                        
+                                                            {user.strengths.map((strength, sid) => 
+                                                            <span key = {sid} className = "badge badge-info p-2 m-1">
+                                                                { strength }
+                                                            </span>
+                                                            )}
+                                                        
+                                                        
+                                                        </div>
+                                                        </div>
+                                                        )}
+                                                        <small className = "form-text text-muted text-center">You can also contact me at <a href = "#" action onClick = {() => {mailTo(user.email)}}>{user.email}</a>.</small>
+                                                        </div>
+                                                
+                                                    </ModalBody>
+                                                    <ModalFooter>
+                                                        <button type = "button" class="btn btn-secondary" onClick={toggle}>Close</button>
+                                                    </ModalFooter>
+                                                </Modal>
+                                            </span>
+                                            }
+                                        </div>
+                                            
+                                    )}
+                                </CardBody>
+                            </Card>
                         </div>
                     </Col>
                     <Col xs="8">
@@ -182,7 +268,7 @@ const ChatRoom = () => {
                                 <InputGroup>
                                 <Input className="messageInput" type="text" name="message" id="message" placeholder="Enter message here" value = {chatMessage} onChange={(e) => setChatMessage(e.target.value)}/>
                                     <InputGroupAddon addonType="append">
-                                        <Button className="sendButton btn btn-primary" type="submit">Send</Button>
+                                        <Button className="sendButton btn btn-dark" type="submit">Send</Button>
                                     </InputGroupAddon>
                                 </InputGroup>
                             </Form>
