@@ -124,15 +124,19 @@ const RoomList = () => {
           <h1 className="h1">Group Dashboard 🕊️</h1>
           <div className = "mt-3">
             <div className = "mb-1 mt-1">
-              If a group is not available or you don't see one you'd like to join, feel free to
-              <Link className = "addroom" to="addroom"> create one yourself</Link>.
+              Have a novel idea for a project?&nbsp;
+              <Link className = "addroom" to="addroom">Create your own group.</Link>
             </div>
             
             <ListGroup>
               {rooms && rooms.map(room => <ListGroupItem className = "listGroup" key={room.id} action onClick={() => { enterChatRoom(room.roomname, room.id) }}>
                 <span>
                   <span className = "font-weight-bold">{room.roomname}</span>
+                  {room.creator == user.uid ? 
                   <a href = "" action onClick={() => { deleteChatRoom(room.roomname) }} className = "DeleteRoom">✖</a>
+                  :
+                  <span></span>
+                  }
                 </span>
                 <div>
                   <span className = "count badge badge-info">Members: <strong>{room.count}/5</strong></span>

@@ -16,6 +16,7 @@ import {
 import firebase from '../Firebase';
 
 const AddRoom = () => {
+    const user = useContext(UserContext);
     const [formValue, setFormValue] = useState('');
 
     const writeToFirestore = async (e) => {
@@ -26,7 +27,8 @@ const AddRoom = () => {
         await roomsRef.add({
           roomname: formValue,
           idea: "Nothing to see here (yet!)",
-          count: 0
+          count: 0,
+          creator: user.uid
         })
 
         console.log(formValue);
