@@ -120,12 +120,14 @@ const RoomList = () => {
             &nbsp;
             <button className = "btn btn-dark mt-1 mr-1" onClick = {() => {auth.signOut()}}>Sign Out</button>
           </div>
-          <h4 className="h4">Welcome, {displayName}! </h4>
-          <h1 className="h1">Group Dashboard 🕊️</h1>
+          <h5 className="h5">Welcome, {displayName}! </h5>
+          <h1 className="h1">Dashboard 🕊️</h1>
+          <hr />
           <div className = "mt-3">
             <div className = "mb-1 mt-1">
-              Have a novel idea for a project?&nbsp;
-              <Link className = "addroom" to="addroom">Create your own group.</Link>
+              <h4 className = "mb-0">Groups:</h4>
+              Pssst. Have a novel idea for a project?&nbsp;
+              <Link className = "addroom" to="addroom">You can create your own group.</Link>
             </div>
             
             <ListGroup>
@@ -148,7 +150,7 @@ const RoomList = () => {
             </ListGroup>
             <hr />
             <div className = "text-center">
-            Or if you're feeling adventurous...
+            Or, if you're feeling adventurous...
             <button className = "btn btn-secondary mb-2 mt-2 w-100" onClick = {() => {shuffle()}}>Shuffle Me</button>
             </div>
           </div>
