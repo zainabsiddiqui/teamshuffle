@@ -51,10 +51,21 @@ const ChatRoom = () => {
 
     const toggle = () => setModal(!modal);
 
-    const mailTo = (email) => {
+    const mailToContact = (email) => {
         window.location.href = "mailto:" + email;
     }
 
+    const mailToProf = (email) => {
+        var listOfMembers = [];
+        for(var i = 0; i < onlineusers.length; i++) {
+            listOfMembers.push(onlineusers[i].displayName);
+        }
+        var body = "Hi Professor,%0D%0A%0D%0AThis is group name " + room + "! We have decided that our project idea/topic will be '" + topic 
+                + "'. Please let us know if you think it is suitable or if you have any comments or considerations to make.%0D%0AOur members are as follows: " 
+                + listOfMembers.join(', ') + ".%0D%0A%0D%0AThank you!";
+                console.log(body);
+        window.location.href = "mailto:placeholderprof@gmail.com?subject=Group Selection&body=" + body;
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -175,9 +186,10 @@ const ChatRoom = () => {
                             <Card className="UsersCard">
                                 <CardBody className="card bg-white">
                                     <CardSubtitle>
-                                        <Button className="exitChatButton btn btn-dark" type="button" onClick={() => { exitChat() }}>
+                                        <Button className="exitChatButton btn btn-secondary float-left" type="button" onClick={() => { exitChat() }}>
                                             Exit Group
                                         </Button>
+                                        <a href = "#" className="btn btn-dark float-right" onClick={() => { mailToProf() }}>Finalize</a>
                                     </CardSubtitle>
                                 </CardBody>
                             </Card>
@@ -221,7 +233,7 @@ const ChatRoom = () => {
                                                         </div>
                                                         </div>
                                                         )}
-                                                        <small className = "form-text text-muted text-center">You can also contact me at <a href = "#" action onClick = {() => {mailTo(user.email)}}>{user.email}</a>.</small>
+                                                        <small className = "form-text text-muted text-center">You can also contact me at <a href = "#" action onClick = {() => {mailToContact(user.email)}}>{user.email}</a>.</small>
                                                         </div>
                                                 
                                                     </ModalBody>
