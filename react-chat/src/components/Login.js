@@ -83,31 +83,29 @@ const Login = () => {
 				<Jumbotron className="Jumbotron pt-4 pb-4">
           <img src="Team_Shuffle_Logo.png" className="logo"/>
           <h2 className = "mt-0 pt-0 text-center bold">SHUFFLE</h2>
-          <h4 className = "mt-0 pt-0 text-center">Sign In</h4>
+          <h4 className = "mt-0 pt-0 text-center">Welcome! Sign in:</h4>
 					<form className="">
-          <div className = "text-center mt-3">
-          <label htmlFor="userEmail">
-            Email:
+          <div className = "form-group">
+          <label htmlFor="userEmail" className = "mb-0">
+            Email
           </label>
           &nbsp; &nbsp;
           <input
             type="email"
-            className="mt-1 w-50"
+            className="form-control"
             name="userEmail"
             value = {email}
             placeholder="E.g: darthvader@gmail.com"
             id="userEmail"
             onChange = {(event) => onChangeHandler(event)}
           />
-          </div>
-          <div className = "text-center mr-5 mb-3">
-          <label htmlFor="userPassword" className="block">
-            Password:
+          <label htmlFor="userPassword" className="mb-0 mt-2">
+            Password
           </label>
           &nbsp; &nbsp;
           <input
             type="password"
-            className="mt-1 w-50"
+            className="form-control"
             name="userPassword"
             value = {password}
             placeholder="Your Password"

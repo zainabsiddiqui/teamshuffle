@@ -43,7 +43,7 @@ const PasswordReset = () => {
       <img src="Team_Shuffle_Logo.png" className="logo"/>
       <h2 className = "mt-0 pt-0 text-center bold">SHUFFLE</h2>
       <h4 className="mt-0 pt-0 text-center">
-        Reset Password
+        Reset password:
       </h4>
       <div className="mx-auto w-11/12 md:w-2/4 rounded py-8 px-4 md:px-8">
         <form action="">
@@ -57,9 +57,9 @@ const PasswordReset = () => {
               {error}
             </div>
           )}
-          <div className = "text-center mt-3">
-          <label htmlFor="userEmail" className="w-full block">
-            Email:
+          <div className = "form-group">
+          <label htmlFor="userEmail" className="w-full block mb-0">
+            Email
           </label>
           &nbsp;&nbsp;
           <input
@@ -69,7 +69,7 @@ const PasswordReset = () => {
             value={email}
             placeholder="Input your email"
             onChange={onChangeHandler}
-            className="mt-1 w-50"
+            className="form-control"
           />
           </div>
           <button
@@ -86,7 +86,7 @@ const PasswordReset = () => {
           to="/"
           className="my-2 text-blue-700 hover:text-blue-800 text-center block"
         >
-          &larr; back to sign in page
+          &larr; take me back to sign in
         </Link>
       </div>
       </Jumbotron>

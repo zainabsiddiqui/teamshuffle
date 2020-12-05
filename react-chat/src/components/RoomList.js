@@ -82,7 +82,7 @@ const RoomList = () => {
       <Jumbotron className="Jumbotron1">
           <div className = "float-right">
             <button className = "btn btn-info mt-1"><Link to="profilepage" className = "profilepage text-decoration-none text-white">
-            Profile
+            Update Profile
           </Link></button>
             &nbsp;
             <button className = "btn btn-dark mt-1 mr-1" onClick = {() => {auth.signOut()}}>Sign Out</button>
@@ -101,7 +101,7 @@ const RoomList = () => {
                   <a href = "" action onClick={() => { deleteChatRoom(room.roomname) }} className = "DeleteRoom">✖</a>
                 </span>
                 <div>
-                  <span className = "count">Members: {room.count}/5</span>
+                  <span className = "count badge badge-info">Members: <strong>{room.count}/5</strong></span>
                 </div>
                 <div>
                   <span className ="idea">Idea: {room.idea}</span>
