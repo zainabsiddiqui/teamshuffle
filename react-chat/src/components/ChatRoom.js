@@ -30,7 +30,7 @@ const ChatRoom = () => {
     const dummy = useRef();
 
     const user = useContext(UserContext);
-    const { displayName } = user;
+    const { displayName, instructor } = user;
 
     const [users, setUsers] = useState([]);
     const [onlineusers, setOnlineUsers] = useState([]);
@@ -38,14 +38,6 @@ const ChatRoom = () => {
     const { room, id } = useParams();
 
     const chatsRef = firestore.collection('rooms').doc(id).collection("chats");
-    // const query = chatsRef.where("roomname", "==", room);
-
-    // var [chats] = useCollectionData(query, { idField: 'id' });
-
-    // console.log(chats);
-
-    // chats = chats.filter(x => x.roomname == room);
-    // console.log(chats);
 
     const [chats, setChats] = useState([]);
 
@@ -59,6 +51,18 @@ const ChatRoom = () => {
 
     const toggle = () => setModal(!modal);
 
+    var profEmail = "placeholderprof@gmail.com";
+
+    firestore.collection("users").where("instructor", "==", true)
+    .get()
+    .then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            profEmail = doc.data().email;
+        });
+    })
+    .catch(function(error) {
+        console.log("Error getting professor email: ", error);
+    });
     const mailToContact = (email) => {
         window.location.href = "mailto:" + email;
     }
@@ -66,13 +70,16 @@ const ChatRoom = () => {
     const mailToProf = (email) => {
         var listOfMembers = [];
         for(var i = 0; i < onlineusers.length; i++) {
-            listOfMembers.push(onlineusers[i].displayName);
+            if(!onlineusers[i].instructor) {
+                listOfMembers.push(onlineusers[i].displayName);
+            }
+            
         }
         var body = "Hi Professor,%0D%0A%0D%0AThis is group name " + room + "! We have decided that our project idea/topic will be '" + topic 
                 + "'. Please let us know if you think it is suitable or if you have any comments or considerations to make.%0D%0AOur members are as follows: " 
                 + listOfMembers.join(', ') + ".%0D%0A%0D%0AThank you!";
                 console.log(body);
-        window.location.href = "mailto:placeholderprof@gmail.com?subject=Group Selection&body=" + body;
+        window.location.href = "mailto:" + profEmail + "?subject=Group Selection&body=" + body;
     }
 
     useEffect(() => {
@@ -201,12 +208,7 @@ const ChatRoom = () => {
       }
 
     const exitChat = async () => {
-        await chatsRef.add({
-          message: displayName + " left "+ room,
-          createdAt: new Date().getTime(),
-          displayName: displayName,
-          type: "exit"
-        });
+
 
         var updateStatusQuery = firestore.collection('roomusers').where('roomname','==', room);
         updateStatusQuery.get().then(function(querySnapshot) {
@@ -216,10 +218,28 @@ const ChatRoom = () => {
             }
           });
         });
+        
+        // Instructor is a ghost, so we don't count them leaving or entering
+        if(!instructor) {
 
-        firestore.collection("rooms").doc(id).update({
-            count: firebase.firestore.FieldValue.increment(-1)
-        })
+            firestore.collection("rooms").doc(id).update({
+                count: firebase.firestore.FieldValue.increment(-1)
+            })
+
+            await chatsRef.add({
+              message: displayName + " left "+ room,
+              createdAt: new Date().getTime(),
+              displayName: displayName,
+              type: "exit"
+            });
+        } else {
+            await chatsRef.add({
+              message: displayName + "⭐ left "+ room,
+              createdAt: new Date().getTime(),
+              displayName: displayName,
+              type: "exit"
+            });
+        }
 
         navigate("/");
     }
@@ -260,7 +280,11 @@ const ChatRoom = () => {
                                             :
                                             <span>
                                                 <CardSubtitle className = "p-1">
-                                                <span>{ user.displayName } <button onClick={toggle} class = "badge badge-info float-right">Profile</button></span>
+                                                {user.instructor ?
+                                                    <span>{ user.displayName } <span class = "float-right">⭐</span></span>
+                                                : 
+                                                    <span>{ user.displayName } <button onClick={toggle} class = "badge badge-info float-right">Profile</button></span>
+                                                }
                                                 </CardSubtitle>
                                                 <Modal isOpen={modal} toggle={toggle}>
                                                     <ModalBody>
