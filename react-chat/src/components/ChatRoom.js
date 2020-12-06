@@ -23,8 +23,7 @@ import {
     ModalHeader,
     ModalFooter
 } from 'reactstrap';
-
-import Moment from 'moment';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 
 const ChatRoom = () => {
@@ -199,7 +198,6 @@ const ChatRoom = () => {
         });
 
         setChatMessage('');
-        dummy.current.scrollIntoView({ behavior: 'smooth' });
       }
 
     const exitChat = async () => {
@@ -237,29 +235,23 @@ const ChatRoom = () => {
 
     return (
         <div className="Container greyBackground">
-            <span ref={dummy}></span>
             <Container>
                 <Row>
                     <Col xs="4">
-            <header className = "StickyHeader text-center">
-            <h4 className = "font-weight-bold">{room} ✨</h4>
-            <h6>Tentative Idea: { topic } </h6>
             
-            </header>
                         <div className = "padding50">
-                            <Card className="UsersCard">
+                        <Card className="UsersCard">
                                 <CardBody className="card bg-white">
                                     <CardSubtitle>
-                                        <Button className="exitChatButton btn btn-secondary float-left" type="button" onClick={() => { exitChat() }}>
-                                            Exit Group
-                                        </Button>
-                                        <a href = "#" className="btn btn-dark float-right" onClick={() => { mailToProf() }}>Finalize</a>
+                                        <small className = "small-text text-muted">Welcome to</small>
+                                        <h4 className = "font-weight-bold">{room}! ✨</h4>
+                                        <p className = "text-center border bg-info text-white p-1 rounded mt-1 mb-0"><strong>Idea:</strong> { topic }</p>
                                     </CardSubtitle>
                                 </CardBody>
                             </Card>
                             <Card className="UsersCard">
                                 <CardBody className="card bg-white">
-                                    <h5>Members</h5>
+                                    <p className = "mb-1"><strong>Members</strong></p>
                                     <hr className = "pt-0 mt-0" />
                                     {onlineusers.map((user, id) =>
                                         <div key = {id}>
@@ -267,7 +259,9 @@ const ChatRoom = () => {
                                                 <CardSubtitle className = "p-1">{ user.displayName } (You)</CardSubtitle>
                                             :
                                             <span>
-                                                <CardSubtitle className = "p-1">{ user.displayName } <button onClick={toggle} class = "badge badge-info">Profile</button></CardSubtitle>
+                                                <CardSubtitle className = "p-1">
+                                                <span>{ user.displayName } <button onClick={toggle} class = "badge badge-info float-right">Profile</button></span>
+                                                </CardSubtitle>
                                                 <Modal isOpen={modal} toggle={toggle}>
                                                     <ModalBody>
                                                         <div
@@ -312,11 +306,20 @@ const ChatRoom = () => {
                                     )}
                                 </CardBody>
                             </Card>
+                            <Card className="UsersCard">
+                                <CardBody className="card greyBackground border-0">
+                                    <CardSubtitle>
+                                        <Button className="exitChatButton btn btn-secondary float-left" type="button" onClick={() => { exitChat() }}>
+                                            Exit Group
+                                        </Button>
+                                        <a href = "#" className="btn btn-dark float-right" onClick={() => { mailToProf() }}>Email Prof</a>
+                                    </CardSubtitle>
+                                </CardBody>
+                            </Card>
                         </div>
                     </Col>
                     <Col xs="8">
-                        <div className = "chatPadding">
-                        <div className = "ChatContent bg-white">
+                        <ScrollToBottom className = "ChatContent bg-white pb-3 pt-3">
                             {chats && chats.map((chat, id) => (
                                 <div className="MessageBox" key = {id}>
                                 {chat.type === "join" || chat.type === "exit" ?
@@ -337,8 +340,7 @@ const ChatRoom = () => {
                                 }
                                 </div>
                             ))}
-                        </div>
-                        </div>
+                        </ScrollToBottom>
                         <footer className="StickyFooter">
                             <Form className="MessageForm" onSubmit={sendMessage}>
                                 <InputGroup>

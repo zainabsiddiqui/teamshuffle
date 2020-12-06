@@ -18,9 +18,12 @@ const SignUp = () => {
   const [error, setError] = useState(null);
   //setInstructor - used on signup for user to decide if they are an instructor or student; defaulted to false
   const [instructor, setInstructor] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
 
   const createUserWithEmailAndPasswordHandler = async (event, email, password) => {
     event.preventDefault();
+    setShowLoading(true);
+
     try{
       console.log("welp we got here i guess")
       const {user} = await auth.createUserWithEmailAndPassword(email, password);
@@ -30,8 +33,9 @@ const SignUp = () => {
     }
     catch(error){
       setError('Error Signing up with email and password');
-      console.log("Error code: " + error);
     }
+
+    setShowLoading(false);
       
     setEmail("");
     setPassword("");

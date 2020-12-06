@@ -18,9 +18,12 @@ import firebase from '../Firebase';
 const AddRoom = () => {
     const user = useContext(UserContext);
     const [formValue, setFormValue] = useState('');
+    const [showLoading, setShowLoading] = useState(false);
 
     const writeToFirestore = async (e) => {
         e.preventDefault();
+
+        setShowLoading(true);
 
         const roomsRef = firestore.collection('rooms');
 
@@ -33,14 +36,19 @@ const AddRoom = () => {
 
         console.log(formValue);
 
+        setShowLoading(false);
+
         setFormValue('');
         navigate("/");
     
   }
 
     return (
+      
         <div className = "min-vh-100 d-flex align-items-center gradient">
-          
+            {showLoading &&
+                <Spinner color="primary" />
+            }
             <Jumbotron className = "Jumbotron">
                 <h4>Get creative!</h4>
                 <h2>Enter your new group name:</h2>

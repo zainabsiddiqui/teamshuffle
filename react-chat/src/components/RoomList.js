@@ -22,26 +22,17 @@ const RoomList = () => {
   const user = useContext(UserContext);
   const {displayName} = user;
 
+  const [showLoading, setShowLoading] = useState(false);
+
   const roomsRef = firestore.collection('rooms');
   const query = roomsRef.orderBy("roomname");
 
-  const [rooms] = useCollectionData(query, { idField: 'id'});
 
+  const [rooms] = useCollectionData(query, { idField: 'id'});
 
   const roomUsersRef = firestore.collection('roomusers');
 
   const [groupSize, setGroupSize] = useState(0);
-
-  // var settingsRef = firestore.collection("settings").doc("groupSettings");
-  // settingsRef.get().then(function(doc) {
-  //   if (doc.exists) {
-  //       setGroupSize(doc.data().groupSize);
-  //   } else {
-  //       console.log("No such document!");
-  //   }
-  // }).catch(function(error) {
-  //     console.log("Error getting document:", error);
-  // });
 
   firestore.collection("settings").doc("groupSettings")
     .onSnapshot(function(doc) {
@@ -51,6 +42,7 @@ const RoomList = () => {
 
 
   const enterChatRoom = async (roomname, roomid, roomcount) => {
+
 
     const chatsRef = firestore.collection('rooms').doc(roomid).collection("chats");
 
@@ -77,12 +69,13 @@ const RoomList = () => {
 
 
       let roomURL = "chatroom/" + roomname + "/" + roomid;
-      console.log(roomURL);
       navigate(roomURL);
     }
   }
 
   const shuffle = async () => {
+
+
     var randomInt = getRandomInt(rooms.length);
     
     const chatsRef = firestore.collection('rooms').doc(rooms[randomInt].id).collection("chats");
@@ -114,6 +107,7 @@ const RoomList = () => {
   }
 
   const deleteChatRoom = async (roomname) => {
+    setShowLoading(true);
     var deletingRoomQuery = firestore.collection('rooms').where('roomname','==', roomname);
     deletingRoomQuery.get().then(function(querySnapshot) {
       querySnapshot.forEach(function(doc) {
@@ -121,14 +115,17 @@ const RoomList = () => {
       });
     });
 
-    var deletingChatsQuery = firestore.collection('chats').where('roomname','==', roomname);
-    deletingChatsQuery.get().then(function(querySnapshot) {
-      querySnapshot.forEach(function(doc) {
-        doc.ref.delete();
-      });
-    });
+    // var deletingChatsQuery = firestore.collection('chats').where('roomname','==', roomname);
+    // deletingChatsQuery.get().then(function(querySnapshot) {
+    //   querySnapshot.forEach(function(doc) {
+    //     doc.ref.delete();
+    //   });
+    // });
+
 
     navigate("/")
+
+    setShowLoading(false);
 
   }
 
@@ -137,7 +134,9 @@ const RoomList = () => {
 
   return (
     <div>
-      
+    {showLoading &&
+                <Spinner color="primary" />
+            }
     <Jumbotron className = "Jumbotron1">
           <div className = "float-right">
             <button className = "btn btn-info mt-1"><Link to="profilepage" className = "profilepage text-decoration-none text-white">

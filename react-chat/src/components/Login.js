@@ -25,16 +25,12 @@ const Login = () => {
         setShowLoading(true);
         try {
           auth.signInWithEmailAndPassword(email, password);
-          setShowLoading(false);
         } catch(e) {
           setError("Error signing in with password and email!");
           console.error("Error signing in with password and email", error);
         }
-        // auth.signInWithEmailAndPassword(email, password).catch(error => {
-        // setError("Error signing in with password and email!");
-        //   console.error("Error signing in with password and email", error);
-        // });
-      };
+      setShowLoading(false);
+    };
       
       const onChangeHandler = (event) => {
           const {name, value} = event.currentTarget;
@@ -47,39 +43,11 @@ const Login = () => {
           }
       }
 
-	// const history = useHistory();
- //    const [creds, setCreds] = useState({ nickname: '' });
- //    const [showLoading, setShowLoading] = useState(false);
- //    const ref = firebase.database().ref('users/');
-    
- //    const onChange = (e) => {
- //        e.persist();
- //        setCreds({...creds, [e.target.name]: e.target.value});
- //    }
-    
- //    const login = (e) => {
- //        e.preventDefault();
- //        setShowLoading(true);
- //        ref.orderByChild('nickname').equalTo(creds.nickname).once('value', snapshot => {
- //            if (snapshot.exists()) {
- //                localStorage.setItem('nickname', creds.nickname);
- //                history.push('/roomlist');
- //                setShowLoading(false);
- //            } else {
- //                const newUser = firebase.database().ref('users/').push();
- //                newUser.set(creds);
- //                localStorage.setItem('nickname', creds.nickname);
- //                history.push('/roomlist');
- //                setShowLoading(false);
- //            }
- //        });
- //    };
-    
     return (
 			<div className = "d-flex align-items-center min-vh-100 gradient">
       {showLoading &&
-          <Spinner color="primary" />
-        }
+                <Spinner color="primary" />
+            }
 				<Jumbotron className="Jumbotron pt-4 pb-4">
           <img src="Team_Shuffle_Logo.png" className="logo"/>
           <h2 className = "mt-0 pt-0 text-center bold">SHUFFLE</h2>
