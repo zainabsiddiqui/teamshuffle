@@ -15,6 +15,9 @@ import {
     ListGroupItem
 } from 'reactstrap';
 
+import Moment from 'moment';
+
+
 const RoomList = () => {
   const user = useContext(UserContext);
   const {displayName} = user;
@@ -27,31 +30,56 @@ const RoomList = () => {
   const chatsRef = firestore.collection('chats');
 
   const roomUsersRef = firestore.collection('roomusers');
+
+  const [groupSize, setGroupSize] = useState(0);
+
+  // var settingsRef = firestore.collection("settings").doc("groupSettings");
+  // settingsRef.get().then(function(doc) {
+  //   if (doc.exists) {
+  //       setGroupSize(doc.data().groupSize);
+  //   } else {
+  //       console.log("No such document!");
+  //   }
+  // }).catch(function(error) {
+  //     console.log("Error getting document:", error);
+  // });
+
+  firestore.collection("settings").doc("groupSettings")
+    .onSnapshot(function(doc) {
+        setGroupSize(doc.data().groupSize);
+    });
   
-  const enterChatRoom = async (roomname, roomid) => {
 
-    firestore.collection("roomusers").doc(user.uid).set({
-        roomname: roomname,
-        displayName: displayName,
-        status: "online"
-    });
 
-    firestore.collection("rooms").doc(roomid).update({
-        count: firebase.firestore.FieldValue.increment(1)
-    });
+  const enterChatRoom = async (roomname, roomid, roomcount) => {
 
-    await chatsRef.add({
-          message: displayName + " joined " + roomname,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    if(roomcount == groupSize) {
+        alert("You're not allowed.");
+    } else {
+
+      firestore.collection("roomusers").doc(user.uid).set({
           roomname: roomname,
           displayName: displayName,
-          type: "join"
-    });
+          status: "online"
+      });
+
+      firestore.collection("rooms").doc(roomid).update({
+          count: firebase.firestore.FieldValue.increment(1)
+      });
+
+      await chatsRef.add({
+            message: displayName + " joined " + roomname,
+            createdAt: Moment(new Date()).format('DD/MM/YYYY HH:mm:ss'),
+            roomname: roomname,
+            displayName: displayName,
+            type: "join"
+      });
 
 
-    let roomURL = "chatroom/" + roomname + "/" + roomid;
-    console.log(roomURL);
-    navigate(roomURL);
+      let roomURL = "chatroom/" + roomname + "/" + roomid;
+      console.log(roomURL);
+      navigate(roomURL);
+    }
   }
 
   const shuffle = async () => {
@@ -131,7 +159,7 @@ const RoomList = () => {
             </div>
             
             <ListGroup>
-              {rooms && rooms.map(room => <ListGroupItem className = "listGroup" key={room.id} action onClick={() => { enterChatRoom(room.roomname, room.id) }}>
+              {rooms && rooms.map(room => <ListGroupItem className = "listGroup" key={room.id} action onClick={() => { enterChatRoom(room.roomname, room.id, room.count) }}>
                 <span>
                   <span className = "font-weight-bold">{room.roomname}</span>
                   {room.creator == user.uid ? 
@@ -141,7 +169,7 @@ const RoomList = () => {
                   }
                 </span>
                 <div>
-                  <span className = "count badge badge-info">Members: <strong>{room.count}/5</strong></span>
+                  <span className = "count badge badge-info">Members: <strong>{room.count}/{ groupSize }</strong></span>
                 </div>
                 <div>
                   <span className ="idea">Idea: {room.idea}</span>

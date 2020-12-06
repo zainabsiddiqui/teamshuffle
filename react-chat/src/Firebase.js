@@ -4,6 +4,7 @@ import 'firebase/auth';
 import { functions } from "firebase";
 import "react-firebase-hooks/firestore"
 
+const settings = {timestampsInSnapshots: true};
 
 const config = {
 	apiKey: "AIzaSyCGLQoUtlvPsQWbBvUJ4GZjHH-LAaBnHPk",
@@ -16,6 +17,8 @@ const config = {
 }
 
 firebase.initializeApp(config);
+
+firebase.firestore().settings(settings);
 
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
@@ -33,12 +36,18 @@ export const generateUserDocument = async (user, additionalData) => {
 
   if (!snapshot.exists) {
     const { email, displayName, photoURL, instructor } = user;
+    var bio = "";
+    var strengths = [];
+    var major = "";
     try {
       await userRef.set({
         displayName,
         email,
         photoURL,
         instructor,
+        bio,
+        major,
+        strengths,
         ...additionalData
       });
     } catch (error) {

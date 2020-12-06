@@ -24,6 +24,8 @@ import {
     ModalFooter
 } from 'reactstrap';
 
+import Moment from 'moment';
+
 
 const ChatRoom = () => {
     const dummy = useRef();
@@ -39,7 +41,14 @@ const ChatRoom = () => {
     const chatsRef = firestore.collection('chats');
     const query = chatsRef.where("roomname", "==", room);
 
-    const [chats] = useCollectionData(query, { idField: 'id' });
+    var [chats] = useCollectionData(query, { idField: 'id' });
+
+    // console.log(chats);
+
+    // chats = chats.filter(x => x.roomname == room);
+    // console.log(chats);
+
+    // const [chats, setChats] = useState([]);
 
     const roomUsersRef = firestore.collection('roomusers');
 
@@ -80,6 +89,21 @@ const ChatRoom = () => {
       
         fetchData();
     }, [room]);
+
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         firestore.collection("chats").where("roomname", "==", room)
+    //         .onSnapshot(function (querySnapshot) {
+    //             querySnapshot.forEach(function(doc) {
+    //                 chats.push(doc.data());
+    //             });
+
+    //             console.log(chats);
+    //         });
+    //     };
+      
+    //     fetchData();
+    // }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -126,11 +150,11 @@ const ChatRoom = () => {
         e.preventDefault();
 
         await chatsRef.add({
-          message: chatMessage,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          roomname: room,
-          displayName: displayName,
-          type: "message"
+            message: chatMessage,
+            createdAt: Moment(new Date()).format('MM/DD/YYYY HH:mm:ss'),
+            roomname: room,
+            displayName: displayName,
+            type: "message"
         });
 
         setChatMessage('');
@@ -140,7 +164,7 @@ const ChatRoom = () => {
     const exitChat = async () => {
         await chatsRef.add({
           message: displayName + " left "+ room,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          createdAt: Moment(new Date()).format('MM/DD/YYYY HH:mm:ss'),
           roomname: room,
           displayName: displayName,
           type: "exit"
