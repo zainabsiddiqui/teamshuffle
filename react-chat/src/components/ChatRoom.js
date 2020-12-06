@@ -38,17 +38,17 @@ const ChatRoom = () => {
 
     const { room, id } = useParams();
 
-    const chatsRef = firestore.collection('chats');
-    const query = chatsRef.where("roomname", "==", room);
+    const chatsRef = firestore.collection('rooms').doc(id).collection("chats");
+    // const query = chatsRef.where("roomname", "==", room);
 
-    var [chats] = useCollectionData(query, { idField: 'id' });
+    // var [chats] = useCollectionData(query, { idField: 'id' });
 
     // console.log(chats);
 
     // chats = chats.filter(x => x.roomname == room);
     // console.log(chats);
 
-    // const [chats, setChats] = useState([]);
+    const [chats, setChats] = useState([]);
 
     const roomUsersRef = firestore.collection('roomusers');
 
@@ -106,6 +106,48 @@ const ChatRoom = () => {
     // }, []);
 
     useEffect(() => {
+    const messagesListener = firestore
+      .collection('rooms')
+      .doc(id)
+      .collection('chats')
+      .orderBy('createdAt', 'asc')
+      .onSnapshot(function (querySnapshot) {
+        setChats([]);
+        var messages = [];
+        querySnapshot.forEach(function(doc) {
+            messages.push(doc.data());
+        });
+        setChats(messages);
+        console.log(messages);
+
+      //   const chats = querySnapshot.docs.map(doc => {
+      //     const firebaseData = doc.data();
+
+      //     const data = {
+      //       _id: doc.id,
+      //       text: '',
+      //       createdAt: new Date().getTime(),
+      //       ...firebaseData
+      //     };
+
+      //     if (!firebaseData.system) {
+      //       data.user = {
+      //         ...firebaseData.user,
+      //         name: firebaseData.user.email
+      //       };
+      //     }
+
+      //     return data;
+      //   });
+
+      //   setMessages(messages);
+      });
+
+    // Stop listening for updates whenever the component unmounts
+    return () => messagesListener();
+  }, []);
+
+    useEffect(() => {
         const fetchData = async () => {
             firestore.collection("roomusers").where("roomname", "==", room)
             .onSnapshot(function (querySnapshot) {
@@ -151,8 +193,7 @@ const ChatRoom = () => {
 
         await chatsRef.add({
             message: chatMessage,
-            createdAt: Moment(new Date()).format('MM/DD/YYYY HH:mm:ss'),
-            roomname: room,
+            createdAt: new Date().getTime(),
             displayName: displayName,
             type: "message"
         });
@@ -164,8 +205,7 @@ const ChatRoom = () => {
     const exitChat = async () => {
         await chatsRef.add({
           message: displayName + " left "+ room,
-          createdAt: Moment(new Date()).format('MM/DD/YYYY HH:mm:ss'),
-          roomname: room,
+          createdAt: new Date().getTime(),
           displayName: displayName,
           type: "exit"
         });

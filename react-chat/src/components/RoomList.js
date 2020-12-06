@@ -27,7 +27,6 @@ const RoomList = () => {
 
   const [rooms] = useCollectionData(query, { idField: 'id'});
 
-  const chatsRef = firestore.collection('chats');
 
   const roomUsersRef = firestore.collection('roomusers');
 
@@ -53,6 +52,8 @@ const RoomList = () => {
 
   const enterChatRoom = async (roomname, roomid, roomcount) => {
 
+    const chatsRef = firestore.collection('rooms').doc(roomid).collection("chats");
+
     if(roomcount == groupSize) {
         alert("You're not allowed.");
     } else {
@@ -69,8 +70,7 @@ const RoomList = () => {
 
       await chatsRef.add({
             message: displayName + " joined " + roomname,
-            createdAt: Moment(new Date()).format('DD/MM/YYYY HH:mm:ss'),
-            roomname: roomname,
+            createdAt: new Date().getTime(),
             displayName: displayName,
             type: "join"
       });
@@ -84,9 +84,8 @@ const RoomList = () => {
 
   const shuffle = async () => {
     var randomInt = getRandomInt(rooms.length);
-    console.log(randomInt);
-    console.log(rooms[randomInt].roomname);
-    console.log(rooms[randomInt].id);
+    
+    const chatsRef = firestore.collection('rooms').doc(rooms[randomInt].id).collection("chats");
 
     firestore.collection("roomusers").doc(user.uid).set({
         roomname: rooms[randomInt].roomname,
@@ -100,8 +99,7 @@ const RoomList = () => {
 
     await chatsRef.add({
           message: displayName + " joined " + rooms[randomInt].roomname,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          roomname: rooms[randomInt].roomname,
+          createdAt: new Date().getTime(),
           displayName: displayName,
           type: "join"
     });
