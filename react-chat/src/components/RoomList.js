@@ -12,7 +12,11 @@ import {
     Spinner,
     Button,
     ListGroup,
-    ListGroupItem
+    ListGroupItem,
+    Modal,
+    ModalBody,
+    ModalHeader,
+    ModalFooter
 } from 'reactstrap';
 
 
@@ -36,14 +40,17 @@ const RoomList = () => {
         setGroupSize(doc.data().groupSize);
     });
   
+  const [modal, setModal] = useState(false);
+
+  const toggle = () => setModal(!modal);
 
 
   const enterChatRoom = async (roomname, roomid, roomcount) => {
 
     const chatsRef = firestore.collection('rooms').doc(roomid).collection("chats");
 
-    if(roomcount == groupSize) {
-      alert("no.");
+    if(roomcount == groupSize && !instructor) {
+      toggle();
     } else {
 
 
@@ -125,13 +132,27 @@ const RoomList = () => {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  const deleteChatRoom = async (roomname) => {
+  const deleteChatRoom = async (roomname, roomid) => {
     setShowLoading(true);
-    var deletingRoomQuery = firestore.collection('rooms').where('roomname','==', roomname);
-    deletingRoomQuery.get().then(function(querySnapshot) {
+
+    firestore.collection("rooms").doc(roomid).collection("chats").get().then(function(querySnapshot){
       querySnapshot.forEach(function(doc) {
         doc.ref.delete();
-      });
+        console.log("Deleted");
+      })
+    });
+
+    // var deletingRoomQuery = firestore.collection('rooms').where('roomname','==', roomname);
+    // deletingRoomQuery.get().then(function(querySnapshot) {
+    //   querySnapshot.forEach(function(doc) {
+    //     doc.ref.delete();
+    //   });
+    // });
+
+    firestore.collection("rooms").doc(roomid).delete().then(function() {
+        console.log("Document successfully deleted!");
+    }).catch(function(error) {
+        console.error("Error removing document: ", error);
     });
 
     // var deletingChatsQuery = firestore.collection('chats').where('roomname','==', roomname);
@@ -170,25 +191,36 @@ const RoomList = () => {
             <button className = "btn btn-dark mt-1 mr-1" onClick = {() => {auth.signOut()}}>Sign Out</button>
           </div>
           {instructor ?
-            <h5 className="h5">Welcome, {displayName}! <span class="badge badge-warning">Admin</span></h5>
+            <h5 className="h5 mb-0">Welcome, <strong>{displayName}</strong>! ⭐</h5>
           :
-            <h5 className="h5">Welcome, {displayName}! </h5>
+            <h5 className="h5 mb-0">Welcome, <strong>{displayName}</strong>! </h5>
           }
-          <h1 className="h1">Dashboard 🕊️</h1>
+          <h1 className="h1 mt-0"><span class = "badge badge-dark">Your Dashboard</span></h1>
           <hr />
           <div className = "mt-3">
             <div className = "mb-1 mt-1">
-              <h4 className = "mb-2">Groups:</h4>
+              <h5 className = "mb-1 bold">Groups:</h5>
               Pssst. Have a novel idea for a project?&nbsp;
               <Link className = "addroom" to="addroom">Create your own group.</Link>
             </div>
+            <div>
+              <Modal isOpen={modal} toggle={toggle}>
+              <ModalHeader toggle={toggle}>Group Max Exceeded</ModalHeader>
+              <ModalBody>
+              Unfortunately, the group you selected is full. Please select another group or <Link className = "addroom" to="addroom">create your own</Link>.
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={toggle}>Close</Button>
+              </ModalFooter>
+            </Modal>
+          </div>
             
             <ListGroup>
               {rooms && rooms.map(room => <ListGroupItem className = "listGroup mb-2 pb-2" key={room.id} action onClick={() => { enterChatRoom(room.roomname, room.id, room.count) }}>
                 <span>
                   <span className = "font-weight-bold">{room.roomname}</span> <span className = "count badge badge-pill badge-info">{room.count}/{ groupSize }</span>
                   {room.creator == user.uid || instructor ? 
-                  <a href = "" action onClick={() => { deleteChatRoom(room.roomname) }} className = "DeleteRoom">✖</a>
+                  <a href = "" action onClick={() => { deleteChatRoom(room.roomname, room.id) }} className = "DeleteRoom">✖</a>
                   :
                   <span></span>
                   }
@@ -200,8 +232,8 @@ const RoomList = () => {
             </ListGroup>
             <hr />
             <div className = "text-center">
-            Or, if you're feeling adventurous...
-            <button className = "btn btn-secondary mb-2 mt-2 w-100" onClick = {() => {shuffle()}}>Shuffle Me</button>
+            Feeling adventurous?
+            <button className = "btn btn-dark mb-2 mt-2 w-100" onClick = {() => {shuffle()}}>Shuffle Me</button>
             </div>
           </div>
     </Jumbotron>

@@ -50,8 +50,8 @@ const Login = () => {
             }
 				<Jumbotron className="Jumbotron pt-4 pb-4">
           <img src="Team_Shuffle_Logo.png" className="logo"/>
-          <h2 className = "mt-0 pt-0 text-center bold">SHUFFLE</h2>
-          <h4 className = "mt-0 pt-0 text-center">Welcome! Sign in:</h4>
+          <h1 className = "mt-0 pt-0 text-center"><span className = "badge badge-info">SHUFFLE</span></h1>
+          <h4 className = "mt-3 pt-0 text-center">Welcome! Sign in:</h4>
 					<form className="">
           <div className = "form-group">
           <label htmlFor="userEmail" className = "mb-0">

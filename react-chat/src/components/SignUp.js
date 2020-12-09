@@ -59,7 +59,7 @@ const SignUp = () => {
     <div className = "d-flex align-items-center min-vh-100 gradient">
         <Jumbotron className="Jumbotron pt-4 pb-4">
           <img src="Team_Shuffle_Logo.png" className="logo"/>
-          <h2 className = "mt-0 pt-0 text-center bold">SHUFFLE</h2>
+          <h1 className = "mt-0 pt-0 text-center"><span className = "badge badge-info">SHUFFLE</span></h1>
           <h4 className = "mt-0 pt-0 text-center">Sign up:</h4>
           {error !== null && (
           <div className="py-4 bg-red-600 w-full text-white text-center mb-3">
