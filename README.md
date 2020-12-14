@@ -10,4 +10,4 @@ The features we boast are:
 - Shuffle feature for those indecisive users who would rather get randomly placed in a group
 
 Here's a sneak peek of what that looks like:
-![Demo](./react-chat/public/Shuffle Demo Gif.gif)
+![Demo](./react-chat/public/ShuffleDemoGif.gif)
