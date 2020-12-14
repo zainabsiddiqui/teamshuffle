@@ -33,7 +33,7 @@ const SignUp = () => {
       // Send to Firebase.js to push details into Firestore
       generateUserDocument(user, {displayName, instructor});
       navigate("/");
-    catch(error){
+    } catch(error){
       setError('Error Signing up with email and password');
     }
 
