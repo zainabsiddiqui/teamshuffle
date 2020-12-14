@@ -22,10 +22,11 @@ const ProfilePage = () => {
   const [major, setMajor] = useState('');
   const [infoUpdated, setInfoUpdated] = useState(false);
   const [error, setError] = useState(null);
-  // const [listOfStrengths, setListOfStrengths] = useState([]);
   var arrStrengths = [];
   var isChecked;
 
+
+  // Writes bio, major, and strengths to Firestore
    const writeToFirestore = async (e) => {
         e.preventDefault();
 
@@ -49,8 +50,6 @@ const ProfilePage = () => {
           setError("There was an error updating the information.");
         });
 
-        // setBio('');
-        // navigate("/");  
   }
 
   return (

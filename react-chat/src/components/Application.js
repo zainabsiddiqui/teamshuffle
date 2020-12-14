@@ -13,11 +13,14 @@ import ProfilePage from './ProfilePage';
 
 function Application() {
   const user = useContext(UserContext);
+
   var instructor;
+  
   user ?
   {instructor} = user 
   :
   console.log("User is null");
+
   return (
     // Check if user is authenticated
      user ?

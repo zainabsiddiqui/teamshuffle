@@ -20,6 +20,8 @@ const AddRoom = () => {
     const [formValue, setFormValue] = useState('');
     const [showLoading, setShowLoading] = useState(false);
 
+
+    // Add new room to Firestore
     const writeToFirestore = async (e) => {
         e.preventDefault();
 

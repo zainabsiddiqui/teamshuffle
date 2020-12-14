@@ -47,12 +47,13 @@ const ChatRoom = () => {
 
     const [chatMessage, setChatMessage] = useState('');
 
+    // Handles the modal that pops up for user profile
     const [modal, setModal] = useState(false);
-
     const toggle = () => setModal(!modal);
 
     var profEmail = "placeholderprof@gmail.com";
 
+    // Grabs which of the users is admin
     firestore.collection("users").where("instructor", "==", true)
     .get()
     .then(function(querySnapshot) {
@@ -63,18 +64,25 @@ const ChatRoom = () => {
     .catch(function(error) {
         console.log("Error getting professor email: ", error);
     });
+
+    // Handles the mailto link for user email in profile
     const mailToContact = (email) => {
         window.location.href = "mailto:" + email;
     }
 
+    // Handles the mail to professor feature
     const mailToProf = (email) => {
+
         var listOfMembers = [];
+        // Grab the list of online users MINUS the professor/instructor/admin
         for(var i = 0; i < onlineusers.length; i++) {
             if(!onlineusers[i].instructor) {
                 listOfMembers.push(onlineusers[i].displayName);
             }
             
         }
+
+        // Builds up the href for the mailto
         var body = "Hi Professor,%0D%0A%0D%0AThis is group name " + room + "! We have decided that our project idea/topic will be '" + topic 
                 + "'. Please let us know if you think it is suitable or if you have any comments or considerations to make.%0D%0AOur members are as follows: " 
                 + listOfMembers.join(', ') + ".%0D%0A%0D%0AThank you!";
@@ -82,6 +90,7 @@ const ChatRoom = () => {
         window.location.href = "mailto:" + profEmail + "?subject=Group Selection&body=" + body;
     }
 
+    // Realtime updates for topic idea for this chatroom
     useEffect(() => {
         const fetchData = async () => {
             firestore.collection("rooms").where("roomname", "==", room)
@@ -96,21 +105,7 @@ const ChatRoom = () => {
         fetchData();
     }, [room]);
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         firestore.collection("chats").where("roomname", "==", room)
-    //         .onSnapshot(function (querySnapshot) {
-    //             querySnapshot.forEach(function(doc) {
-    //                 chats.push(doc.data());
-    //             });
-
-    //             console.log(chats);
-    //         });
-    //     };
-      
-    //     fetchData();
-    // }, []);
-
+    // Realtime updates for chat messages for this chatroom
     useEffect(() => {
     const messagesListener = firestore
       .collection('rooms')
@@ -125,34 +120,13 @@ const ChatRoom = () => {
         });
         setChats(messages);
         console.log(messages);
-
-      //   const chats = querySnapshot.docs.map(doc => {
-      //     const firebaseData = doc.data();
-
-      //     const data = {
-      //       _id: doc.id,
-      //       text: '',
-      //       createdAt: new Date().getTime(),
-      //       ...firebaseData
-      //     };
-
-      //     if (!firebaseData.system) {
-      //       data.user = {
-      //         ...firebaseData.user,
-      //         name: firebaseData.user.email
-      //       };
-      //     }
-
-      //     return data;
-      //   });
-
-      //   setMessages(messages);
       });
 
     // Stop listening for updates whenever the component unmounts
     return () => messagesListener();
-  }, []);
+    }, []);
 
+    // Realtime updates for online room/group users
     useEffect(() => {
         const fetchData = async () => {
             firestore.collection("roomusers").where("roomname", "==", room)
@@ -194,6 +168,7 @@ const ChatRoom = () => {
     }, [users]);
 
 
+    // Adds the message that the user typed out to Firestore
     const sendMessage = async (e) => {
         e.preventDefault();
 
@@ -207,9 +182,10 @@ const ChatRoom = () => {
         setChatMessage('');
       }
 
+    // Have the current user exit the chatroom
     const exitChat = async () => {
 
-
+        // Update user's status to offline
         var updateStatusQuery = firestore.collection('roomusers').where('roomname','==', room);
         updateStatusQuery.get().then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
@@ -222,10 +198,12 @@ const ChatRoom = () => {
         // Instructor is a ghost, so we don't count them leaving or entering
         if(!instructor) {
 
+            // Decrement the count in the current room
             firestore.collection("rooms").doc(id).update({
                 count: firebase.firestore.FieldValue.increment(-1)
             })
 
+            // Add the leaving message to Firestore
             await chatsRef.add({
               message: displayName + " left "+ room,
               createdAt: new Date().getTime(),
@@ -244,6 +222,7 @@ const ChatRoom = () => {
         navigate("/");
     }
 
+    // If user hearts a message, add it to Firestore as the topic
     const updateTopic = async (message) => {
         var updateTopicQuery = firestore.collection('rooms').where('roomname','==', room);
         updateTopicQuery.get().then(function(querySnapshot) {

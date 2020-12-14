@@ -28,6 +28,8 @@ export const signInWithGoogle = () => {
   auth.signInWithPopup(provider);
 };
 
+
+// Adds the user document for the user signing up to Firestore
 export const generateUserDocument = async (user, additionalData) => {
   if (!user) return;
 
@@ -57,6 +59,7 @@ export const generateUserDocument = async (user, additionalData) => {
   return getUserDocument(user.uid);
 };
 
+// Grabs the user document from Firestore for the user id provided
 const getUserDocument = async uid => {
   if (!uid) return null;
   try {
@@ -71,6 +74,7 @@ const getUserDocument = async uid => {
   }
 };
 
+// Grabs the collection of rooms currently in Firestore
 export const getRoomDocuments = async (roomsArray) => {
   try {
   	firestore.collection("rooms").get().then(function(querySnapshot) {

@@ -17,20 +17,8 @@ import {
 
     const [groupSize, setGroupSize] = useState(0); //Set default groupSize to 5, can be altered by the instructor upon class creation
 
-    // var settingsRef = firestore.collection("settings").doc("groupSettings");
-    // settingsRef.get().then(function(doc) {
-    //   if (doc.exists) {
-    //       setGroupSize(doc.data().groupSize);
-    //   } else {
-    //       // doc.data() will be undefined in this case
-    //       console.log("No such document!");
-    //   }
-    // }).catch(function(error) {
-    //     console.log("Error getting document:", error);
-    // });
-
-
-    const pushSize = () => { //will return the groupSize value to console, should setGroup size to new value
+    // Push the new group size setting to Firestore
+    const pushSize = () => { 
       console.log(groupSize);
         firestore.collection("settings").doc("groupSettings").set({
           groupSize: groupSize
@@ -43,14 +31,8 @@ import {
       const { value } = event.currentTarget;
 
       setGroupSize(value);
-      // console.log(groupSize);
-      // console.log(defaultValue);
 
   };
-
-  // console.log(document.getElementById("newSize"));
-
-
 
   return(
     <div className = "min-vh-100 d-flex align-items-center gradient">

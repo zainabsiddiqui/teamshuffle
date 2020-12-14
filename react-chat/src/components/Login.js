@@ -20,6 +20,7 @@ const Login = () => {
     const [error, setError] = useState(null);
     const [showLoading, setShowLoading] = useState(false);
 
+    // Signs in the user using Firestore's authentication function
     const signInWithEmailAndPasswordHandler = (event,email, password) => {
         event.preventDefault();
         setShowLoading(true);
@@ -32,16 +33,17 @@ const Login = () => {
       setShowLoading(false);
     };
       
-      const onChangeHandler = (event) => {
-          const {name, value} = event.currentTarget;
-        
-          if(name === 'userEmail') {
-              setEmail(value);
-          }
-          else if(name === 'userPassword'){
-            setPassword(value);
-          }
-      }
+    // Set email and password based on what is currently in the email and password fields
+    const onChangeHandler = (event) => {
+        const {name, value} = event.currentTarget;
+      
+        if(name === 'userEmail') {
+            setEmail(value);
+        }
+        else if(name === 'userPassword'){
+          setPassword(value);
+        }
+    }
 
     return (
 			<div className = "d-flex align-items-center min-vh-100 gradient">

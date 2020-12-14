@@ -44,16 +44,17 @@ const RoomList = () => {
 
   const toggle = () => setModal(!modal);
 
-
+  // Enter the chatroom user clicked given the roomname, id, and count
   const enterChatRoom = async (roomname, roomid, roomcount) => {
 
     const chatsRef = firestore.collection('rooms').doc(roomid).collection("chats");
 
+    // If room is full, pull up the modal that says room is full
     if(roomcount == groupSize && !instructor) {
       toggle();
     } else {
 
-
+      // Room is not full, so add the user to the list of users in the room and update user status
       firestore.collection("roomusers").doc(user.uid).set({
           roomname: roomname,
           displayName: displayName,
@@ -63,6 +64,7 @@ const RoomList = () => {
       // Instructors are ghosts and don't get counted in our room count
       if(!instructor) {
 
+        // Increment the user count for that room
         firestore.collection("rooms").doc(roomid).update({
             count: firebase.firestore.FieldValue.increment(1)
         });
@@ -89,9 +91,10 @@ const RoomList = () => {
     }
   }
 
+  // Randomizer feature which shuffles user into a random room from the current room list
   const shuffle = async () => {
 
-
+    // Get a random integer
     var randomInt = getRandomInt(rooms.length);
     
     const chatsRef = firestore.collection('rooms').doc(rooms[randomInt].id).collection("chats");
@@ -128,13 +131,16 @@ const RoomList = () => {
 
   }
 
+  // Custom random integer function
   const getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
+  // Delete the chatroom the user selected to delete
   const deleteChatRoom = async (roomname, roomid) => {
     setShowLoading(true);
 
+    // Delete all of the messages in the chats subcollection of rooms in Firestore
     firestore.collection("rooms").doc(roomid).collection("chats").get().then(function(querySnapshot){
       querySnapshot.forEach(function(doc) {
         doc.ref.delete();
@@ -142,26 +148,12 @@ const RoomList = () => {
       })
     });
 
-    // var deletingRoomQuery = firestore.collection('rooms').where('roomname','==', roomname);
-    // deletingRoomQuery.get().then(function(querySnapshot) {
-    //   querySnapshot.forEach(function(doc) {
-    //     doc.ref.delete();
-    //   });
-    // });
-
+    // Delete the room document itself
     firestore.collection("rooms").doc(roomid).delete().then(function() {
         console.log("Document successfully deleted!");
     }).catch(function(error) {
         console.error("Error removing document: ", error);
     });
-
-    // var deletingChatsQuery = firestore.collection('chats').where('roomname','==', roomname);
-    // deletingChatsQuery.get().then(function(querySnapshot) {
-    //   querySnapshot.forEach(function(doc) {
-    //     doc.ref.delete();
-    //   });
-    // });
-
 
     navigate("/")
 

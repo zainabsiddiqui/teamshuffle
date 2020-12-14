@@ -25,6 +25,7 @@ const PasswordReset = () => {
     }
   };
 
+  // Uses Firebase functions to send reset email
   const sendResetEmail = event => {
     event.preventDefault();
     auth
