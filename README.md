@@ -1,5 +1,5 @@
 # teamshuffle
-**Team Shuffle** is an application that streamlines the process of finding groups for class projects and competitive events.
+**Team Shuffle** is an application that streamlines the process of finding groups for class projects and competitive events. It is built using React and Firebase (Cloud Firestore). 
 
 The features we boast are:
 - Individual chatrooms for each group so that users can explore each other as well as potential topic ideas
